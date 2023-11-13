@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch.functional import F
 from torch_geometric.datasets import QM9
 from torch_geometric.loader import DataLoader
+from torch_geometric.utils import scatter
 
 class PaiNN(nn.Module):
     def __init__(self, num_atoms, num_embeddings, cutoff_dist):
@@ -41,10 +42,9 @@ class PaiNN(nn.Module):
         embeddings = split[:, :self.num_embeddings] # [n_neighbours, num_embeddings]
         embeddings = torch.sum(embeddings, dim=0)   # [num_embeddings]
 
-        # equivariant_repr = torch.mul(equivariant_repr * split[:, self.num_embeddings:2*self.num_embeddings]) \
-        #                     + torch.mul(split[:, 2*self.num_embeddings:] * rel_pos / distance) # [n_neighbours, num_embeddings, 3]
-        print(torch.mul(equivariant_repr * split[:, self.num_embeddings:2*self.num_embeddings]).shape)
-        exit()
+        equivariant_repr = torch.mul(equivariant_repr, split[:, self.num_embeddings:2*self.num_embeddings, None]) \
+                            + torch.mul(torch.mul(split[:, 2*self.num_embeddings:, None], rel_pos[:, None, :]), distance[:, None, None]) # [n_neighbours, num_embeddings, 3]
+        equivariant_repr = torch.sum(equivariant_repr, dim=0) # [num_embeddings, 3]
 
         return equivariant_repr, embeddings
 
@@ -73,12 +73,17 @@ class PaiNN(nn.Module):
         equivariant_repr = torch.zeros((len(z), self.num_embeddings, 3))
 
         for i in torch.arange(len(z)):
-            neighbours_idx = neighbours[i].nonzero(as_tuple=True)[0]
-            print(len(neighbours_idx))
+            neighbours_idx = neighbours[i].nonzero(as_tuple=True)[0] # [batchsize num_neighbours]
             rel_pos = pos[i] - pos
-            return self.message(equivariant_repr[neighbours_idx], embeddings[neighbours_idx], rel_pos[neighbours_idx])
-        #     #atom
-        #     # for n in neighbours_idx:
+
+            delta_equivariant_repr, delta_embedding = self.message(equivariant_repr[neighbours_idx], embeddings[neighbours_idx], rel_pos[neighbours_idx])
+            equivariant_repr[i] += delta_equivariant_repr
+            embeddings[i] += delta_embedding
+            exit()
+
+            # equivariant_repr[i], embeddings[i] += self.update(equivariant_repr[neighbours_idx], embeddings[neighbours_idx])
+
+        return
 
 
 if __name__ == "__main__":
