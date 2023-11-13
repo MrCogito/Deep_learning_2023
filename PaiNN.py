@@ -26,33 +26,38 @@ class PaiNN(nn.Module):
     # equivariant_repr: [n_neighbours, num_embeddings, 3]
     # embeddings: [n_neighbours, num_embeddings]
     # rel_pos: [n_neighbours, 3]
-    def message(self, equivariant_repr, embedding, rel_pos):
-        phi = self.linear_phi1(embedding) # [n_neighbours, num_embeddings]
+    def message(self, equivariant_repr, embeddings, rel_pos):
+        phi = self.linear_phi1(embeddings) # [n_neighbours, num_embeddings]
         phi = F.silu(phi)
-        phi = self.linear_phi2(phi)
+        phi = self.linear_phi2(phi)       # [n_neighbours, 3*num_embeddings]
 
-        distance = torch.norm(rel_pos)
-        RBF = torch.sin(torch.arange(1, 21) * torch.pi * distance / self.cutoff_dist) / distance
-        W = self.linear_W(RBF)
-        # Add cosine cutoff
+        distance = torch.norm(rel_pos, dim=1)   # [n_neighbours]
+        RBF = torch.stack([torch.sin(torch.arange(1, 21) * torch.pi * dist / self.cutoff_dist) / dist for dist in distance]) # [n_neighbours, 20]
+        W = self.linear_W(RBF) # [n_neighbours, 3*num_embeddings]
+        # Add cosine cutoff # [n_neighbours, 3*num_embeddings]
 
-        split = torch.mul(phi, W)
+        split = torch.mul(phi, W) # [n_neighbours, 3*num_embeddings]
 
-        embedding = split[:self.num_embeddings]
+        embeddings = split[:, :self.num_embeddings] # [n_neighbours, num_embeddings]
+        embeddings = torch.sum(embeddings, dim=0)   # [num_embeddings]
 
-        equivariant_repr = torch.mul(equivariant_repr * split[self.num_embeddings:2*self.num_embeddings]) \
-                            + torch.mul(split[2*self.num_embeddings:] * rel_pos / distance)
+        # equivariant_repr = torch.mul(equivariant_repr * split[:, self.num_embeddings:2*self.num_embeddings]) \
+        #                     + torch.mul(split[:, 2*self.num_embeddings:] * rel_pos / distance) # [n_neighbours, num_embeddings, 3]
+        print(torch.mul(equivariant_repr * split[:, self.num_embeddings:2*self.num_embeddings]).shape)
+        exit()
 
-        return equivariant_repr, embedding
+        return equivariant_repr, embeddings
 
+    # equivariant_repr: [n_neighbours, num_embeddings, 3]
+    # embeddings: [n_neighbours, num_embeddings]
     def update(self, equivariant_repr, embedding):
         U = self.linear_U(equivariant_repr)
         V = self.linear_V(equivariant_repr) # [self.num_embeddings, 3]
 
         stack = torch.stack(embedding, torch.norm(V, dim=1))
         stack = self.linear_update1(stack)
-        stack = F.silu(embedding)
-        split = self.linear_update2(embedding)
+        stack = F.silu(stack)
+        split = self.linear_update2(stack)
 
         equivariant_repr = torch.mul(U, split[:self.num_embeddings])
         embedding = split[self.num_embeddings:2*self.num_embeddings] + torch.sum(U * V, dim=1) \
@@ -69,13 +74,12 @@ class PaiNN(nn.Module):
 
         for i in torch.arange(len(z)):
             neighbours_idx = neighbours[i].nonzero(as_tuple=True)[0]
+            print(len(neighbours_idx))
             rel_pos = pos[i] - pos
-            #atom
-            # for n in neighbours_idx:
+            return self.message(equivariant_repr[neighbours_idx], embeddings[neighbours_idx], rel_pos[neighbours_idx])
+        #     #atom
+        #     # for n in neighbours_idx:
 
-
-
-        return
 
 if __name__ == "__main__":
     cutoff_dist = 5
@@ -85,3 +89,6 @@ if __name__ == "__main__":
     train, validation, test = torch.utils.data.random_split(dataset, [0.8, 0.1, 0.1], generator=torch.Generator().manual_seed(42))
 
     train_loader = DataLoader(train, batch_size=32)
+
+    net = PaiNN(9, 128, cutoff_dist)
+    net(next(iter(train_loader)))
