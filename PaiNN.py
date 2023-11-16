@@ -80,7 +80,6 @@ class PaiNN(nn.Module):
 
     def forward(self, data):
         pos, z, neighbours = data.pos, data.z, data.neighbours
-        print('Forward')
 
         # 1. Initialize inputs (s and v)
         embeddings = self.embeddings(z) # [batch_size, num_embeddings]
@@ -89,7 +88,11 @@ class PaiNN(nn.Module):
         print('batch:', data.batch)
 
         # 2. Send messages and make updates
-        for i in torch.arange(len(z)): # for every atom in molecule
+        for i in torch.arange(len(z)): # for every atom
+            # get all atoms in the same molecule
+            atoms_ids = torch.where(torch.tensor(data.batch) == data.batch[i])[0]
+            atoms = data[atoms_ids]
+            #print(atoms)
             # get neighbours of atom (ids) and their relative position
             neighbours_idx = neighbours[i].nonzero(as_tuple=True)[0] # [num_neighbours]
             rel_pos = pos[i] - pos
@@ -101,7 +104,7 @@ class PaiNN(nn.Module):
             equivariant_repr[i] += delta_v
             embeddings[i] += delta_s
 
-            break
+            #break
 
             # update
             # equivariant_repr[i], embeddings[i] += self.update(equivariant_repr[neighbours_idx], embeddings[neighbours_idx])
@@ -157,6 +160,8 @@ if __name__ == "__main__":
     # Testing
     batch = next(iter(train_loader))
     print(batch)
+
+    molecule = dataset[2]
     model(batch)
 
     # # Now you can check the dimensions and values of updated_equivariant_repr and updated_embedding
