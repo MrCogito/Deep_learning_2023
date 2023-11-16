@@ -51,8 +51,6 @@ class PaiNN(nn.Module):
     # equivariant_repr: [n_neighbours, num_embeddings, 3]
     # embeddings: [n_neighbours, num_embeddings]
     def update(self, equivariant_repr, embedding):
-        
-
         U = self.linear_U(equivariant_repr.permute(0,2,1))
         U = U.permute(0,2,1)
         print(f"U shape: ", U.shape)
@@ -80,25 +78,37 @@ class PaiNN(nn.Module):
 
         return equivariant_repr, embedding
 
-
     def forward(self, data):
         pos, z, neighbours = data.pos, data.z, data.neighbours
+        print('Forward')
 
-        embeddings = self.embeddings(z)
+        # 1. Initialize inputs (s and v)
+        embeddings = self.embeddings(z) # [batch_size, num_embeddings]
         equivariant_repr = torch.zeros((len(z), self.num_embeddings, 3))
+        print(embeddings.shape)
+        print('batch:', data.batch)
 
-        for i in torch.arange(len(z)):
-            neighbours_idx = neighbours[i].nonzero(as_tuple=True)[0] # [batchsize num_neighbours]
+        # 2. Send messages and make updates
+        for i in torch.arange(len(z)): # for every atom in molecule
+            # get neighbours of atom (ids) and their relative position
+            neighbours_idx = neighbours[i].nonzero(as_tuple=True)[0] # [num_neighbours]
             rel_pos = pos[i] - pos
 
-            delta_equivariant_repr, delta_embedding = self.message(equivariant_repr[neighbours_idx], embeddings[neighbours_idx], rel_pos[neighbours_idx])
-            equivariant_repr[i] += delta_equivariant_repr
-            embeddings[i] += delta_embedding
-            exit()
+            print(f'embeddings[{i}]:', embeddings[i].shape)
 
+            # send message (only to neighbours)
+            delta_v, delta_s = self.message(equivariant_repr[neighbours_idx], embeddings[neighbours_idx], rel_pos[neighbours_idx])
+            equivariant_repr[i] += delta_v
+            embeddings[i] += delta_s
+
+            break
+
+            # update
             # equivariant_repr[i], embeddings[i] += self.update(equivariant_repr[neighbours_idx], embeddings[neighbours_idx])
 
-        return
+        # 3. Final linear layer
+        output = 0
+        return output
 
 def create_dummy_data(num_neighbours, num_embeddings):
     # Create a dummy equivariant representation tensor
@@ -112,11 +122,21 @@ def create_dummy_data(num_neighbours, num_embeddings):
 if __name__ == "__main__":
     # cutoff_dist = 5
 
-    # dataset = QM9(root=f"./data/{5}A")
+    dataset = QM9(root=f"./data/{5}A")
 
-    # train, validation, test = torch.utils.data.random_split(dataset, [0.8, 0.1, 0.1], generator=torch.Generator().manual_seed(42))
+    # Calculate split lengths
+    total_length = len(dataset)
+    train_length = int(0.8 * total_length)
+    val_length = int(0.1 * total_length)
+    test_length = total_length - train_length - val_length
 
-    # train_loader = DataLoader(train, batch_size=32)
+    # Perform random split
+    train_set, val_set, test_set = torch.utils.data.random_split(dataset, [train_length, val_length, test_length], generator=torch.Generator().manual_seed(42))
+
+    # Create data loaders
+    train_loader = DataLoader(train_set, batch_size=32)
+    val_loader = DataLoader(val_set, batch_size=32)
+    test_loader = DataLoader(test_set, batch_size=32)
 
     # net = PaiNN(9, 128, cutoff_dist)
     # net(next(iter(train_loader))
@@ -134,7 +154,11 @@ if __name__ == "__main__":
     # print(f"Embeddig size", embedding.shape)
     # updated_equivariant_repr, updated_embedding = model.update(equivariant_repr, embedding)
 
+    # Testing
+    batch = next(iter(train_loader))
+    print(batch)
+    model(batch)
+
     # # Now you can check the dimensions and values of updated_equivariant_repr and updated_embedding
     # print("Updated Equivariant Representation Shape:", updated_equivariant_repr.shape)
     # print("Updated Embedding Shape:", updated_embedding.shape)
-
