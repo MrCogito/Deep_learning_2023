@@ -80,7 +80,7 @@ class Message(GraphLayer):
         distance = torch.norm(rel_pos, dim=1) # [num_edges]
         RBF = torch.sin(torch.arange(1, 21)[None, :] * torch.pi * distance[:, None] / self.cutoff_dist) / distance[:, None] # [num_edges, 20]
         W = self.linear_W(RBF)      # [num_edges, 3*num_embeddings]
-        # Add cosine cutoff         # [num_edges, 3*num_embeddings]
+        # TODO: Add cosine cutoff         # [num_edges, 3*num_embeddings]
 
         split = torch.mul(phi, W)   # [num_edges, 3*num_embeddings]
         split1 = split[:, :self.num_embeddings]
@@ -138,7 +138,7 @@ class Update(GraphLayer):
         return delta_s_ij, delta_v_ij
 
 class PaiNN(nn.Module):
-    def __init__(self, num_atoms, num_embeddings, cutoff_dist):
+    def __init__(self, num_atoms, num_embeddings, cutoff_dist, hidden_out_dim):
         super().__init__()
         self.num_embeddings = num_embeddings
         self.cutoff_dist = cutoff_dist
@@ -146,6 +146,9 @@ class PaiNN(nn.Module):
         self.embeddings = nn.Embedding(num_atoms, num_embeddings)
         self.message = Message(num_embeddings, cutoff_dist)
         self.update = Update(num_embeddings, cutoff_dist)
+
+        self.linear_out1 = nn.Linear(num_embeddings, hidden_out_dim)
+        self.linear_out2 = nn.Linear(hidden_out_dim, 1)
 
     def forward(self, data):
         # 1. Initialize inputs (s and v)
@@ -156,10 +159,14 @@ class PaiNN(nn.Module):
         embeddings, equivariant_repr = self.message(embeddings, equivariant_repr, data.pos, data.batch)
         embeddings, equivariant_repr = self.update(embeddings, equivariant_repr, data.pos, data.batch)
 
-
         # 3. Final linear layer
+        out = self.linear_out1(embeddings) # [batch_size, num_embeddings] -> [batch_size, hidden_out_dim]
+        out = F.silu(out)
+        out = self.linear_out2(out) # [batch_size, 1]
 
-        return embeddings, equivariant_repr
+        out = scatter(out, data.batch, dim=0, reduce="sum")
+
+        return out
 
 
 if __name__ == "__main__":
@@ -173,7 +180,9 @@ if __name__ == "__main__":
     test_length = total_length - train_length - val_length
 
     # Perform random split
-    train_set, val_set, test_set = torch.utils.data.random_split(dataset, [train_length, val_length, test_length], generator=torch.Generator().manual_seed(42))
+    train_set, val_set, test_set = torch.utils.data.random_split(dataset,
+                                                                 [train_length, val_length, test_length],
+                                                                 generator=torch.Generator().manual_seed(42))
 
     # Create data loaders
     train_loader = DataLoader(train_set, batch_size=32)
@@ -183,14 +192,9 @@ if __name__ == "__main__":
 
     ### Testing
     # Instantiate the PaiNN model
-    model = PaiNN(num_atoms=9, num_embeddings=128, cutoff_dist=5) # Adjust the parameters as needed
+    model = PaiNN(num_atoms=9, num_embeddings=128, cutoff_dist=5, hidden_out_dim=128) # Adjust the parameters as needed
     batch = next(iter(train_loader))
     print(batch)
 
     out = model(batch)
-    print(out[0].shape)
-    print(out[1].shape)
-
-    # # Now you can check the dimensions and values of updated_equivariant_repr and updated_embedding
-    # print("Updated Equivariant Representation Shape:", updated_equivariant_repr.shape)
-    # print("Updated Embedding Shape:", updated_embedding.shape)
+    print(out.shape)
