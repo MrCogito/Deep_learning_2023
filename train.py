@@ -31,8 +31,8 @@ test_loader = DataLoader(test_set, batch_size=32)
 model = PaiNN(num_atoms=9, num_embeddings=128, cutoff_dist=5, hidden_out_dim=128) # Adjust the parameters as needed
 
 
-epochs = 10
-criterion = nn.BCEWithLogitsLoss()
+epochs = 1
+criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 
