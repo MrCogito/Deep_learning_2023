@@ -1,5 +1,5 @@
-import torch
 from __future__ import annotations
+import torch
 from dtu import Parameters, dtu, GPU
 import os
 from os import mkdir
