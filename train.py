@@ -36,31 +36,36 @@ criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 
-def training_loop(model):
-    running_loss = 0.0
+def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion):
+
     for epoch in range(epochs):
         model.train()
-        # Zero the gradients
-        optimizer.zero_grad()
+        total_train_loss = 0.0
+        for batch in train_loader:
+            optimizer.zero_grad()
+            #Forward pass
+            output = model(batch)
+            # Assuming 'output' and 'batch.y' are aligned for loss calculation
+            loss = criterion(output, batch.y) 
+            loss.backward()
+            optimizer.step()
+            total_train_loss += loss.item()
+        avg_train_loss = total_train_loss / len(train_loader)
+        print(f'Epoch [{epoch+1}/{epochs}], Train Loss: {avg_train_loss:.4f}')
 
-        batch = next(iter(train_loader))
+        # Validation phase
+        model.eval()
+        total_val_loss = 0.0
+        with torch.no_grad():
+            for batch in val_loader:
+                output = model(batch)
+                loss = criterion(output, batch.y)
+                total_val_loss += loss.item()
 
-        # Forward pass
-        output = model(batch)
-
-        # Calculate the loss
-        loss = criterion(output)
-
-        # Backpropagation
-        loss.backward()
-
-        # Update weights
-        optimizer.step()
-
-        # Print statistics
-        running_loss += loss.item()
-        print(running_loss)
+        avg_val_loss = total_val_loss / len(val_loader)
+        print(f'Epoch [{epoch+1}/{epochs}], Validation Loss: {avg_val_loss:.4f}')
 
 
-training_loop(model)
+
+training_loop(model, train_loader, val_loader, epochs, optimizer, criterion)
 
