@@ -9,7 +9,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 
 ### load data
-dataset = QM9(root=f"./data/{5}A")
+dataset = QM9(root=f"./data")
 
 # Calculate split lengths
 total_length = len(dataset)
@@ -30,15 +30,15 @@ test_loader = DataLoader(test_set, batch_size=32)
 
 ### Testing
 # Instantiate the PaiNN model
-model = PaiNN(num_atoms=9, num_embeddings=128, cutoff_dist=5, hidden_out_dim=128) # Adjust the parameters as needed
+model = PaiNN(num_atoms=10, num_embeddings=128, cutoff_dist=5, hidden_out_dim=128) # Adjust the parameters as needed
 
 
-epochs = 1
+epochs = 10
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 
-def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion):
+def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, param):
 
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
     # Variable to keep track of smoothed validation loss
@@ -53,7 +53,7 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion)
             #Forward pass
             output = model(batch)
             # Assuming 'output' and 'batch.y' are aligned for loss calculation
-            loss = criterion(output, batch.y) 
+            loss = criterion(output.squeeze(), batch.y[:, param])
             loss.backward()
             optimizer.step()
             total_train_loss += loss.item()
@@ -66,7 +66,7 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion)
         with torch.no_grad():
             for batch in val_loader:
                 output = model(batch)
-                loss = criterion(output, batch.y)
+                loss = criterion(output.squeeze(), batch.y[:, param])
                 total_val_loss += loss.item()
 
         avg_val_loss = total_val_loss / len(val_loader)
@@ -83,5 +83,5 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion)
 
 
 
-training_loop(model, train_loader, val_loader, epochs, optimizer, criterion)
+training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, 1)
 
