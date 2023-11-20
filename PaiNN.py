@@ -78,9 +78,11 @@ class Message(GraphLayer):
 
         rel_pos = r_i - r_j         # [num_edges, 3]
         distance = torch.norm(rel_pos, dim=1) # [num_edges]
-        RBF = torch.sin(torch.arange(1, 21)[None, :] * torch.pi * distance[:, None] / self.cutoff_dist) / distance[:, None] # [num_edges, 20]
+        cutoff = distance.detach().clone()
+        cutoff[distance <= self.cutoff_dist] = 0.5*(torch.cos(torch.pi * distance[distance <= self.cutoff_dist] / self.cutoff_dist) + 1)
+        cutoff[distance > 0] = 0
+        RBF = cutoff[:, None] * torch.sin(torch.arange(1, 21)[None, :] * torch.pi * distance[:, None] / self.cutoff_dist) / distance[:, None] # [num_edges, 20]
         W = self.linear_W(RBF)      # [num_edges, 3*num_embeddings]
-        # TODO: Add cosine cutoff         # [num_edges, 3*num_embeddings]
 
         split = torch.mul(phi, W)   # [num_edges, 3*num_embeddings]
         split1 = split[:, :self.num_embeddings]
@@ -100,19 +102,10 @@ class Update(GraphLayer):
     def __init__(self, num_embeddings, cutoff_dist):
         super().__init__(num_embeddings, cutoff_dist)
 
-        self.linear_U = nn.Linear(self.num_embeddings, self.num_embeddings)
-        self.linear_V = nn.Linear(self.num_embeddings, self.num_embeddings)
+        self.linear_U = nn.Linear(self.num_embeddings, self.num_embeddings, bias=False)
+        self.linear_V = nn.Linear(self.num_embeddings, self.num_embeddings, bias=False)
         self.linear_update1 = nn.Linear(2*self.num_embeddings, self.num_embeddings)
         self.linear_update2 = nn.Linear(self.num_embeddings, 3*self.num_embeddings)
-
-    # embeddings :      [natoms, num_embeddings]
-    # equivar_repr :    [3, natoms, num_embeddings]
-    # pos :             [natoms, 3]
-    # batch :           [natoms]
-    def forward(self, embeddings, equivar_repr, pos, batch):
-        neighbours = self.get_neighbours_as_edge_index(pos, batch, self.cutoff_dist)
-
-        return self.propagate(neighbours, s=embeddings, v=equivar_repr, r=pos, neighbours=neighbours)
 
     # _j is a neighbour, _i is the atom
     # s_j : [num_edges, num_embeddings]
