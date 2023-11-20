@@ -5,6 +5,8 @@ from PaiNN import PaiNN
 from torch_geometric.datasets import QM9
 from torch_geometric.loader import DataLoader
 from torch_geometric.utils import scatter
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
 
 ### load data
 dataset = QM9(root=f"./data/{5}A")
@@ -38,6 +40,11 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion):
 
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
+    # Variable to keep track of smoothed validation loss
+    smoothed_val_loss = None
+    smoothing_factor = 0.9
+
     for epoch in range(epochs):
         model.train()
         total_train_loss = 0.0
@@ -63,7 +70,16 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion)
                 total_val_loss += loss.item()
 
         avg_val_loss = total_val_loss / len(val_loader)
-        print(f'Epoch [{epoch+1}/{epochs}], Validation Loss: {avg_val_loss:.4f}')
+        # Apply exponential smoothing to validation loss
+        if smoothed_val_loss is None:
+            smoothed_val_loss = avg_val_loss
+        else:
+            smoothed_val_loss = (smoothing_factor * smoothed_val_loss) + ((1 - smoothing_factor) * avg_val_loss)
+
+        print(f'Epoch [{epoch+1}/{epochs}], Train Loss: {avg_train_loss:.4f}, Smoothed Validation Loss: {smoothed_val_loss:.4f}')
+
+        # Adjust learning rate based on smoothed validation loss
+        scheduler.step(smoothed_val_loss)
 
 
 
