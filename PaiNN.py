@@ -129,6 +129,42 @@ class Update(GraphLayer):
         delta_v_ij = torch.mul(U, split1[None, :, :]) # [3, num_edges, num_embeddings]
 
         return delta_s_ij, delta_v_ij
+    
+class GatedEquivariantBlock(nn.Module):
+    def __init__(self, num_embeddings):
+        super().__init__()
+        self.num_embeddings = num_embeddings
+
+        # Linear layers for v
+        self.linear_v_right = nn.Linear(num_embeddings, num_embeddings, bias=False) # going right in the schematic
+        self.linear_v_down = nn.Linear(num_embeddings, num_embeddings, bias=False) # going down in the schematic
+
+        # Linear layers for s
+        self.linear_s1 = nn.Linear(2*num_embeddings, num_embeddings)
+        self.linear_s2 = nn.Linear(num_embeddings, 2*num_embeddings)
+
+    def forward(self, s_j, v_j):
+        # computing left lane
+        v_down = self.linear_v_down(v_j) # [3, num_edges, num_embeddings] ? check
+
+        # computing right lane
+        v_right = self.linear_v_right(v_j) # check
+        v_right = torch.norm(v_right, dim=0)
+
+        stack = torch.cat([s_j, v_right], dim=1) # [num_edges, 2*num_embeddings] ? check
+
+        stack = self.linear_s1(stack) # [num_edges, num_embeddings]
+        stack = F.silu(stack)
+        split = self.linear_s2(stack) # [num_edges, 3*num_embeddings]
+
+        split1 = split[:, :self.num_embeddings]  # First part, contains the first 128 elements in the second dimension
+        split2 = split[:, self.num_embeddings: 2*self.num_embeddings]  # Second part, contains the next 128 elements
+
+        # output
+        v = torch.mul(v_down, split1[None, :, :]) # [3, num_edges, num_embeddings]
+        s = split2
+
+        return s, v
 
 class PaiNN(nn.Module):
     def __init__(self, num_atoms, num_embeddings, cutoff_dist, hidden_out_dim):
@@ -139,6 +175,8 @@ class PaiNN(nn.Module):
         self.embeddings = nn.Embedding(num_atoms, num_embeddings)
         self.message = Message(num_embeddings, cutoff_dist)
         self.update = Update(num_embeddings, cutoff_dist)
+
+        self.GEB = GatedEquivariantBlock(num_embeddings)
 
         self.linear_out1 = nn.Linear(num_embeddings, hidden_out_dim)
         self.linear_out2 = nn.Linear(hidden_out_dim, 1)
@@ -151,6 +189,10 @@ class PaiNN(nn.Module):
         # 2. Send messages and make updates
         embeddings, equivariant_repr = self.message(embeddings, equivariant_repr, data.pos, data.batch)
         embeddings, equivariant_repr = self.update(embeddings, equivariant_repr, data.pos, data.batch)
+
+        # Testing gated block
+        #v, s = self.GEB(embeddings, equivariant_repr)
+        #print(v.shape, s.shape)
 
         # 3. Final linear layer
         out = self.linear_out1(embeddings) # [batch_size, num_embeddings] -> [batch_size, hidden_out_dim]
