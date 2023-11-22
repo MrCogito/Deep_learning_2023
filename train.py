@@ -6,7 +6,7 @@ from torch_geometric.datasets import QM9
 from torch_geometric.loader import DataLoader
 from torch_geometric.utils import scatter
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-
+import wandb
 
 ### load data
 dataset = QM9(root=f"./data")
@@ -33,12 +33,17 @@ test_loader = DataLoader(test_set, batch_size=32)
 model = PaiNN(num_atoms=10, num_embeddings=128, cutoff_dist=5, hidden_out_dim=128) # Adjust the parameters as needed
 
 
-epochs = 10
-criterion = nn.MSELoss()
+epochs = 32 
+criterion = nn.MSELoss() 
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 
-def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, param):
+def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, param, isServer, name, batch_size, num_atoms, num_embeddings, cutoff_dist, device ):
+
+    #SETUP WANDB
+    # SETUP WANDB
+    if (isServer): 
+        wandb.init(project="deeplearning_painn", name=name, config={ "epochs": epochs, "batch_size": batch_size, "num_atoms": num_atoms, "num_embeddings": num_embeddings, "cutoff_disc": cutoff_dist, "criterion": "MSELoss", "Optimizer": "Adam0001", "device": str(device)})
 
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
     # Variable to keep track of smoothed validation loss
@@ -81,7 +86,11 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion,
         # Adjust learning rate based on smoothed validation loss
         scheduler.step(smoothed_val_loss)
 
+        wandb.log({"train_loss": avg_train_loss, "val loss": avg_train_loss, "smoothed val loss":smoothed_val_loss })
+
+    wandb.finish()
+    torch.save(model.state_dict(), f"/path/to/myfolder/{name}.pth")
 
 
-training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, 1)
+#training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, 1)
 
