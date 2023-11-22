@@ -40,10 +40,19 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, param, isServer, name, batch_size, num_atoms, num_embeddings, cutoff_dist, device ):
 
+    
     #SETUP WANDB
-    # SETUP WANDB
-    if (isServer): 
-        wandb.init(project="deeplearning_painn", name=name, config={ "epochs": epochs, "batch_size": batch_size, "num_atoms": num_atoms, "num_embeddings": num_embeddings, "cutoff_disc": cutoff_dist, "criterion": "MSELoss", "Optimizer": "Adam0001", "device": str(device)})
+    if isServer: 
+        wandb.init(project="deeplearning_painn", name=name, config={
+            "epochs": epochs, 
+            "batch_size": batch_size, 
+            "num_atoms": num_atoms, 
+            "num_embeddings": num_embeddings, 
+            "cutoff_disc": cutoff_dist, 
+            "criterion": "MSELoss", 
+            "Optimizer": "Adam0001", 
+            "device": str(device)
+        }) 
 
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
     # Variable to keep track of smoothed validation loss
@@ -87,9 +96,14 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion,
         scheduler.step(smoothed_val_loss)
 
         wandb.log({"train_loss": avg_train_loss, "val loss": avg_train_loss, "smoothed val loss":smoothed_val_loss })
-
+        if (epoch + 1) % 10 == 0:
+            # Save the model
+            torch.save(model.state_dict(), f"/zhome/59/9/198225/Desktop/Deep_learning_2023/models/{name}_epoch_{epoch+1}.pth")
+            
+    torch.save(model.state_dict(), f"/zhome/59/9/198225/Desktop/Deep_learning_2023/models/{name}_final.pth")
     wandb.finish()
-    torch.save(model.state_dict(), f"/path/to/myfolder/{name}.pth")
+
+   
 
 
 #training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, 1)
