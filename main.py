@@ -20,7 +20,7 @@ class Defaults(Parameters):
     GPU: None | GPU = GPU.v32
     time: int = 84600 # 23.5 hours
     #data_folder_name: str = "data_fod"
-    epochs: float = 1000
+    epochs: int = 1000
     batch_size: int = 32  
     isServer: bool = True
 
@@ -29,7 +29,7 @@ class Defaults(Parameters):
     cutoff_dist: float=5
     hidden_out_dim: int =128
     # SETUP PARAMATERS
-    def run(self, name: str, time: int, isServer: bool, epochs: float, batch_size: int, num_atoms: int, num_embeddings: int, cutoff_dist: float, hidden_out_dim: int):
+    def run(self, name: str, time: int, isServer: bool, epochs: int, batch_size: int, num_atoms: int, num_embeddings: int, cutoff_dist: float, hidden_out_dim: int):
 
         start = seconds()
         
