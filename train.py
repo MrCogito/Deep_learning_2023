@@ -6,10 +6,10 @@ from torch_geometric.datasets import QM9
 from torch_geometric.loader import DataLoader
 from torch_geometric.utils import scatter
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-
+import wandb
 
 ### load data
-dataset = QM9(root=f"./data/{5}A")
+dataset = QM9(root=f"./data")
 
 # Calculate split lengths
 total_length = len(dataset)
@@ -30,15 +30,29 @@ test_loader = DataLoader(test_set, batch_size=32)
 
 ### Testing
 # Instantiate the PaiNN model
-model = PaiNN(num_atoms=9, num_embeddings=128, cutoff_dist=5, hidden_out_dim=128) # Adjust the parameters as needed
+model = PaiNN(num_atoms=10, num_embeddings=128, cutoff_dist=5, hidden_out_dim=128) # Adjust the parameters as needed
 
 
-epochs = 1
-criterion = nn.MSELoss()
+epochs = 999 
+criterion = nn.MSELoss() 
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 
-def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion):
+def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, param, isServer, name, batch_size, num_atoms, num_embeddings, cutoff_dist, device ):
+
+    
+    #SETUP WANDB
+    if isServer: 
+        wandb.init(project="deeplearning_painn", name=name, config={
+            "epochs": epochs, 
+            "batch_size": batch_size, 
+            "num_atoms": num_atoms, 
+            "num_embeddings": num_embeddings, 
+            "cutoff_disc": cutoff_dist, 
+            "criterion": "MSELoss", 
+            "Optimizer": "Adam0001", 
+            "device": str(device)
+        }) 
 
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
     # Variable to keep track of smoothed validation loss
@@ -53,7 +67,7 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion)
             #Forward pass
             output = model(batch)
             # Assuming 'output' and 'batch.y' are aligned for loss calculation
-            loss = criterion(output, batch.y) 
+            loss = criterion(output.squeeze(), batch.y[:, param])
             loss.backward()
             optimizer.step()
             total_train_loss += loss.item()
@@ -66,7 +80,7 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion)
         with torch.no_grad():
             for batch in val_loader:
                 output = model(batch)
-                loss = criterion(output, batch.y)
+                loss = criterion(output.squeeze(), batch.y[:, param])
                 total_val_loss += loss.item()
 
         avg_val_loss = total_val_loss / len(val_loader)
@@ -81,7 +95,16 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion)
         # Adjust learning rate based on smoothed validation loss
         scheduler.step(smoothed_val_loss)
 
+        wandb.log({"train_loss": avg_train_loss, "val loss": avg_train_loss, "smoothed val loss":smoothed_val_loss })
+        if (epoch + 1) % 10 == 0:
+            # Save the model
+            torch.save(model.state_dict(), f"/zhome/59/9/198225/Desktop/Deep_learning_2023/models/{name}_epoch_{epoch+1}.pth")
+            
+    torch.save(model.state_dict(), f"/zhome/59/9/198225/Desktop/Deep_learning_2023/models/{name}_final.pth")
+    wandb.finish()
+
+   
 
 
-training_loop(model, train_loader, val_loader, epochs, optimizer, criterion)
+#training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, 1)
 

@@ -27,8 +27,8 @@ def add_neighbours(data: Data, cutoff=5.0, padto=30) -> Data:
 
 data = QM9(root="./data/5A", pre_transform=add_neighbours)
 
-print(data[2].neighbours)
+
 
 # max number of atoms -- 29
-# y = [data[i].z.shape[0] for i in range((130830))]
-# print(max(y))
+y = torch.cat([data[i].z for i in range(130831)])
+print(torch.unique(y))
