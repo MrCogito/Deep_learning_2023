@@ -36,8 +36,7 @@ class Defaults(Parameters):
         folder = f"outputs/{'-'.join(name.split('-')[:-1])}/{name}/"
         if not exists(folder): mkdir(folder)
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        criterion = nn.MSELoss() 
-        optimizer = optim.Adam(model.parameters(), lr=0.001)
+
         param = 1
         
         # load and prep dataset
@@ -49,6 +48,8 @@ class Defaults(Parameters):
 
         model = PaiNN(num_atoms=num_atoms, num_embeddings=num_embeddings, cutoff_dist=cutoff_dist, hidden_out_dim=hidden_out_dim)
         # Perform random split
+        criterion = nn.MSELoss() 
+        optimizer = optim.Adam(model.parameters(), lr=0.001)
         train_set, val_set, test_set = torch.utils.data.random_split(dataset,
                                                                         [train_length, val_length, test_length],
                                                                         generator=torch.Generator().manual_seed(42))
