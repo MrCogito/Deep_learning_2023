@@ -1,0 +1,229 @@
+{
+    "os": "Linux-5.4.258-1.el7.elrepo.x86_64-x86_64-with-glibc2.17",
+    "python": "3.10.12",
+    "heartbeatAt": "2023-11-24T21:53:17.833825",
+    "startedAt": "2023-11-24T21:53:17.002544",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "-name",
+        "Batchsize128-0",
+        "-time",
+        "84600",
+        "-epochs",
+        "1000",
+        "-batch_size",
+        "128",
+        "-isServer",
+        "True",
+        "-num_atoms",
+        "10",
+        "-num_embeddings",
+        "128",
+        "-cutoff_dist",
+        "5.0",
+        "-hidden_out_dim",
+        "128",
+        "-ID",
+        "0"
+    ],
+    "state": "running",
+    "program": "/zhome/59/9/198225/Desktop/Deep_learning_2023/Deep_learning_2023/main.py",
+    "codePathLocal": "main.py",
+    "codePath": "main.py",
+    "git": {
+        "remote": "https://github.com/MrCogito/Deep_learning_2023.git",
+        "commit": "690da59d8e648fc851d97e5c1c1405b0bb8874d4"
+    },
+    "email": "jakob@3esser.dk",
+    "root": "/zhome/59/9/198225/Desktop/Deep_learning_2023/Deep_learning_2023",
+    "host": "n-62-18-11",
+    "username": "s230208",
+    "executable": "/zhome/59/9/198225/Desktop/Deep_learning_2023/project-env/bin/python",
+    "cpu_count": 32,
+    "cpu_count_logical": 32,
+    "cpu_freq": {
+        "current": 983.0554687499999,
+        "min": 0.0,
+        "max": 0.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 800.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 839.937,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.575,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 1567.666,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 801.222,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 834.027,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.0,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 817.718,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.792,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.413,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 3359.446,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.454,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 801.012,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 801.339,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 3219.6,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.877,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.594,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.932,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.618,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 801.396,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.911,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.443,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.912,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.459,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.302,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.922,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.3,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 801.41,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.611,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 801.378,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.587,
+            "min": 0.0,
+            "max": 0.0
+        },
+        {
+            "current": 800.922,
+            "min": 0.0,
+            "max": 0.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 71.9168586730957,
+            "used": 4.9504241943359375
+        }
+    },
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA A100 80GB PCIe",
+            "memory_total": 85899345920
+        }
+    ],
+    "memory": {
+        "total": 1007.3646621704102
+    }
+}

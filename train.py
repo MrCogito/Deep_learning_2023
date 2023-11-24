@@ -23,9 +23,9 @@ train_set, val_set, test_set = torch.utils.data.random_split(dataset,
                                                                 generator=torch.Generator().manual_seed(42))
 
 # Create data loaders
-train_loader = DataLoader(train_set, batch_size=32)
-val_loader = DataLoader(val_set, batch_size=32)
-test_loader = DataLoader(test_set, batch_size=32)
+train_loader = DataLoader(train_set, batch_size=128)
+val_loader = DataLoader(val_set, batch_size=128)
+test_loader = DataLoader(test_set, batch_size=128)
 
 
 ### Testing

@@ -23,7 +23,7 @@ class Defaults(Parameters):
     time: int = 84600 # 23.5 hours
     #data_folder_name: str = "data_fod"
     epochs: int = 1000
-    batch_size: int = 32  
+    batch_size: int = 128  
     isServer: bool = True
 
     num_atoms: int =10

@@ -1,3 +1,3 @@
 from main import Defaults, GPU
 
-Defaults("Test1", GPU=GPU.a80)
+Defaults("Batchsize128", GPU=GPU.a80)
