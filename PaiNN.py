@@ -149,6 +149,13 @@ class PaiNN(nn.Module):
         equivariant_repr = torch.zeros((3, len(data.z), self.num_embeddings))
 
         # 2. Send messages and make updates
+        # Layer 1
+        embeddings, equivariant_repr = self.message(embeddings, equivariant_repr, data.pos, data.batch)
+        embeddings, equivariant_repr = self.update(embeddings, equivariant_repr, data.pos, data.batch)
+        # Layer 2
+        embeddings, equivariant_repr = self.message(embeddings, equivariant_repr, data.pos, data.batch)
+        embeddings, equivariant_repr = self.update(embeddings, equivariant_repr, data.pos, data.batch)
+        # Layer 3
         embeddings, equivariant_repr = self.message(embeddings, equivariant_repr, data.pos, data.batch)
         embeddings, equivariant_repr = self.update(embeddings, equivariant_repr, data.pos, data.batch)
 
