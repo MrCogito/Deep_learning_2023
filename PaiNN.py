@@ -7,8 +7,10 @@ from torch_geometric.utils import scatter
 from torch_geometric.nn import MessagePassing
 
 class GraphLayer(MessagePassing):
-    def __init__(self, num_embeddings, cutoff_dist):
+    def __init__(self, num_embeddings, cutoff_dist, device):
         super().__init__(flow="source_to_target")
+
+        self.device = device
 
         self.num_embeddings = num_embeddings
         self.cutoff_dist = cutoff_dist
@@ -49,18 +51,18 @@ class GraphLayer(MessagePassing):
         # select atoms
         neighbours = torch.where(distances <= cutoff_dist, 1, 0)
         # mask other atoms
-        neighbours = neighbours * torch.block_diag(*[torch.ones((u,u)) for u in unique[1]])
+        neighbours = neighbours * torch.block_diag(*[torch.ones((u,u)) for u in unique[1]]).to(self.device)
         # exclude itself
-        neighbours = neighbours - torch.eye(neighbours.shape[0])
+        neighbours = neighbours - torch.eye(neighbours.shape[0], device=self.device)
         # get neighbours in the form of [2, num_edges]
         neighbours = neighbours.nonzero(as_tuple=False).t()
-        neighbours = torch.index_select(neighbours, dim=0, index=torch.tensor([1,0])).type(torch.LongTensor)
+        neighbours = torch.index_select(neighbours, dim=0, index=torch.tensor([1,0], device=self.device)).type(torch.LongTensor).to(self.device)
 
         return neighbours
 
 class Message(GraphLayer):
-    def __init__(self, num_embeddings, cutoff_dist):
-        super().__init__(num_embeddings, cutoff_dist)
+    def __init__(self, num_embeddings, cutoff_dist, device):
+        super().__init__(num_embeddings, cutoff_dist, device)
 
         self.linear_phi1 = nn.Linear(self.num_embeddings, self.num_embeddings)
         self.linear_phi2 = nn.Linear(self.num_embeddings, 3*self.num_embeddings)
@@ -81,7 +83,7 @@ class Message(GraphLayer):
         cutoff = distance.detach().clone()
         cutoff[distance <= self.cutoff_dist] = 0.5*(torch.cos(torch.pi * distance[distance <= self.cutoff_dist] / self.cutoff_dist) + 1)
         cutoff[distance > 0] = 0
-        RBF = cutoff[:, None] * torch.sin(torch.arange(1, 21)[None, :] * torch.pi * distance[:, None] / self.cutoff_dist) / distance[:, None] # [num_edges, 20]
+        RBF = cutoff[:, None] * torch.sin(torch.arange(1, 21, device=self.device)[None, :] * torch.pi * distance[:, None] / self.cutoff_dist) / distance[:, None] # [num_edges, 20]
         W = self.linear_W(RBF)      # [num_edges, 3*num_embeddings]
 
         split = torch.mul(phi, W)   # [num_edges, 3*num_embeddings]
@@ -99,8 +101,8 @@ class Message(GraphLayer):
         return delta_s_ij, delta_v_ij
 
 class Update(GraphLayer):
-    def __init__(self, num_embeddings, cutoff_dist):
-        super().__init__(num_embeddings, cutoff_dist)
+    def __init__(self, num_embeddings, cutoff_dist, device):
+        super().__init__(num_embeddings, cutoff_dist, device)
 
         self.linear_U = nn.Linear(self.num_embeddings, self.num_embeddings, bias=False)
         self.linear_V = nn.Linear(self.num_embeddings, self.num_embeddings, bias=False)
@@ -131,14 +133,15 @@ class Update(GraphLayer):
         return delta_s_ij, delta_v_ij
 
 class PaiNN(nn.Module):
-    def __init__(self, num_atoms, num_embeddings, cutoff_dist, hidden_out_dim):
+    def __init__(self, num_atoms, num_embeddings, cutoff_dist, hidden_out_dim, device):
         super().__init__()
         self.num_embeddings = num_embeddings
         self.cutoff_dist = cutoff_dist
+        self.device = device
 
         self.embeddings = nn.Embedding(num_atoms, num_embeddings)
-        self.message = Message(num_embeddings, cutoff_dist)
-        self.update = Update(num_embeddings, cutoff_dist)
+        self.message = Message(num_embeddings, cutoff_dist, device)
+        self.update = Update(num_embeddings, cutoff_dist, device)
 
         self.linear_out1 = nn.Linear(num_embeddings, hidden_out_dim)
         self.linear_out2 = nn.Linear(hidden_out_dim, 1)
@@ -146,7 +149,7 @@ class PaiNN(nn.Module):
     def forward(self, data):
         # 1. Initialize inputs (s and v)
         embeddings = self.embeddings(data.z) # [batch_size, num_embeddings]
-        equivariant_repr = torch.zeros((3, len(data.z), self.num_embeddings))
+        equivariant_repr = torch.zeros((3, len(data.z), self.num_embeddings), device=self.device)
 
         # 2. Send messages and make updates
         # Layer 1
@@ -170,6 +173,8 @@ class PaiNN(nn.Module):
 
 
 if __name__ == "__main__":
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
     ### load data
     dataset = QM9(root=f"./data/{5}A")
 
@@ -192,8 +197,11 @@ if __name__ == "__main__":
 
     ### Testing
     # Instantiate the PaiNN model
-    model = PaiNN(num_atoms=9, num_embeddings=128, cutoff_dist=5, hidden_out_dim=128) # Adjust the parameters as needed
+    model = PaiNN(num_atoms=9, num_embeddings=128, cutoff_dist=5, hidden_out_dim=128, device=device) # Adjust the parameters as needed
+    model.to(device)
     batch = next(iter(train_loader))
+    batch.to(device)
+    print(device)
     print(batch)
 
     out = model(batch)
