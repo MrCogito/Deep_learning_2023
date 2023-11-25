@@ -1,3 +1,3 @@
 from main import Defaults, GPU
 
-Defaults("Test1", GPU=GPU.a80)
+Defaults(name="NewGPUfix", GPU=GPU.a80)

@@ -1,0 +1,52 @@
+
+Epoch [1/1000], Train Loss: 19.3856
+Epoch [1/1000], Train Loss: 19.3856, Smoothed Validation Loss: 3.6563
+Epoch [2/1000], Train Loss: 4.4683
+Epoch [2/1000], Train Loss: 4.4683, Smoothed Validation Loss: 3.6495
+Epoch [3/1000], Train Loss: 1117.9431
+Epoch [3/1000], Train Loss: 1117.9431, Smoothed Validation Loss: 5.7165
+Epoch [4/1000], Train Loss: 11.7099
+Epoch [4/1000], Train Loss: 11.7099, Smoothed Validation Loss: 5.7854
+Epoch [5/1000], Train Loss: 6.1763
+Epoch [5/1000], Train Loss: 6.1763, Smoothed Validation Loss: 5.6939
+Epoch [6/1000], Train Loss: 4.8765
+Epoch [6/1000], Train Loss: 4.8765, Smoothed Validation Loss: 5.4451
+Epoch [7/1000], Train Loss: 4.2227
+Epoch [7/1000], Train Loss: 4.2227, Smoothed Validation Loss: 5.2390
+Epoch [8/1000], Train Loss: 3.8341
+Epoch [8/1000], Train Loss: 3.8341, Smoothed Validation Loss: 5.0083
+Epoch 00008: reducing learning rate of group 0 to 5.0000e-04.
+Epoch [9/1000], Train Loss: 2.9630
+Epoch [9/1000], Train Loss: 2.9630, Smoothed Validation Loss: 4.9510
+Epoch [10/1000], Train Loss: 2.9044
+Epoch [10/1000], Train Loss: 2.9044, Smoothed Validation Loss: 4.8259
+Epoch [11/1000], Train Loss: 2.7328
+Epoch [11/1000], Train Loss: 2.7328, Smoothed Validation Loss: 4.6690
+Epoch [12/1000], Train Loss: 2.5230
+Epoch [12/1000], Train Loss: 2.5230, Smoothed Validation Loss: 4.4866
+Epoch [13/1000], Train Loss: 2.3497
+Epoch [13/1000], Train Loss: 2.3497, Smoothed Validation Loss: 4.2487
+Epoch [14/1000], Train Loss: 2.2322
+Epoch [14/1000], Train Loss: 2.2322, Smoothed Validation Loss: 4.0304
+Epoch 00014: reducing learning rate of group 0 to 2.5000e-04.
+Epoch [15/1000], Train Loss: 1.7804
+Epoch [15/1000], Train Loss: 1.7804, Smoothed Validation Loss: 3.7641
+Epoch [16/1000], Train Loss: 1.7009
+Epoch [16/1000], Train Loss: 1.7009, Smoothed Validation Loss: 3.5184
+Epoch [17/1000], Train Loss: 1.6324
+Epoch [17/1000], Train Loss: 1.6324, Smoothed Validation Loss: 3.2956
+Epoch [18/1000], Train Loss: 1.5798
+Epoch [18/1000], Train Loss: 1.5798, Smoothed Validation Loss: 3.0901
+Epoch [19/1000], Train Loss: 1.5848
+Epoch [19/1000], Train Loss: 1.5848, Smoothed Validation Loss: 2.9100
+Epoch [20/1000], Train Loss: 1.7426
+Epoch [20/1000], Train Loss: 1.7426, Smoothed Validation Loss: 2.7661
+Epoch [21/1000], Train Loss: 1.5094
+Epoch [21/1000], Train Loss: 1.5094, Smoothed Validation Loss: 2.6060
+Epoch [22/1000], Train Loss: 1.4317
+Epoch [22/1000], Train Loss: 1.4317, Smoothed Validation Loss: 2.4595
+Epoch [23/1000], Train Loss: 1.5069
+Epoch [23/1000], Train Loss: 1.5069, Smoothed Validation Loss: 2.3418
+Epoch [24/1000], Train Loss: 1.3727
+Epoch [24/1000], Train Loss: 1.3727, Smoothed Validation Loss: 2.2222
+Epoch [25/1000], Train Loss: 1.3303
