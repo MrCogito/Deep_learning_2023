@@ -22,20 +22,23 @@ train_set, val_set, test_set = torch.utils.data.random_split(dataset,
                                                                 [train_length, val_length, test_length],
                                                                 generator=torch.Generator().manual_seed(42))
 
+batch_size=32
 # Create data loaders
-train_loader = DataLoader(train_set, batch_size=128)
-val_loader = DataLoader(val_set, batch_size=128)
-test_loader = DataLoader(test_set, batch_size=128)
+train_loader = DataLoader(train_set, batch_size)
+val_loader = DataLoader(val_set, batch_size)
+test_loader = DataLoader(test_set, batch_size)
 
 
 ### Testing
 # Instantiate the PaiNN model
-model = PaiNN(num_atoms=10, num_embeddings=128, cutoff_dist=5, hidden_out_dim=128) # Adjust the parameters as needed
+#device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+#model = PaiNN(num_atoms=10, num_embeddings=128, cutoff_dist=5, hidden_out_dim=128, device=device) # Adjust the parameters as needed
 
 
 epochs = 999 
-criterion = nn.MSELoss() 
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+#criterion = nn.MSELoss() 
+#optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 def root_mean_squared_error(preds, targets):
     return torch.sqrt(torch.mean((preds - targets) ** 2))

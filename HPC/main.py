@@ -1,7 +1,7 @@
+from __future__ import annotations
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from __future__ import annotations
 import torch
 from dtu import Parameters, dtu, GPU
 from os import mkdir
@@ -23,7 +23,7 @@ class Defaults(Parameters):
     time: int = 84600 # 23.5 hours
     #data_folder_name: str = "data_fod"
     epochs: int = 1000
-    batch_size: int = 128  
+    batch_size: int = 32  
     isServer: bool = True
 
     num_atoms: int =10
