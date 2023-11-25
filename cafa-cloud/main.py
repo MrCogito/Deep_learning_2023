@@ -24,7 +24,7 @@ num_embeddings = 128
 cutoff_dist    = 5
 hidden_out_dim = 128
 learning_rate  = 0.001
-weight_decay   = 0.01
+weight_decay   = 0
 
 def load_data(path, batch_size):
     ### load data
