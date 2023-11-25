@@ -258,6 +258,11 @@ class PaiNN(nn.Module):
 
         self.messagelayer = MessageLayer(num_embeddings, cutoff_dist, device)
 
+        # multiple message passing layers
+        self.messageLayers = []
+        for _ in range(message_layers):
+            self.messageLayers.append(MessageLayer(num_embeddings, cutoff_dist, device))
+
         self.linear_out1 = nn.Linear(num_embeddings, hidden_out_dim)
         self.linear_out2 = nn.Linear(hidden_out_dim, 1)
 
@@ -271,6 +276,10 @@ class PaiNN(nn.Module):
             embeddings, equivariant_repr = self.messagelayer(embeddings, equivariant_repr, data.pos, data.batch)
             # embeddings, equivariant_repr = self.message(embeddings, equivariant_repr, data.pos, data.batch)
             # embeddings, equivariant_repr = self.update(embeddings, equivariant_repr, data.pos, data.batch)
+
+        # For passing through multiple message passing layers use:
+        # for messagelayer in self.messageLayers:
+        #     embeddings, equivariant_repr = messagelayer(embeddings, equivariant_repr, data.pos, data.batch)
 
         # 3. Final linear layer
         out = self.linear_out1(embeddings) # [batch_size, num_embeddings] -> [batch_size, hidden_out_dim]
