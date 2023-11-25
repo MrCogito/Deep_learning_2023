@@ -171,7 +171,7 @@ if __name__ == "__main__":
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     ### load data
-    dataset = QM9(root=f"./data/{5}A")
+    dataset = QM9(root=f"./data")
 
     # Calculate split lengths
     total_length = len(dataset)
