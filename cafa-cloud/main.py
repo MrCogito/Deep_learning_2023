@@ -39,8 +39,8 @@ print("Data loaded and split")
 
 ### Hyperparameters
 param          = 1
-epochs         = 1
-batch_size     = 32
+epochs         = 10
+batch_size     = 64
 num_atoms      = 10
 num_embeddings = 128
 cutoff_dist    = 5
@@ -93,8 +93,6 @@ for epoch in range(epochs):
         loss = criterion(output.squeeze(), batch.y[:, param])
         loss.backward()
         optimizer.step()
-        print(batch)
-        print(output.squeeze())
         total_train_loss += loss.item()
         total_train_rmse += root_mean_squared_error(output.squeeze(), batch.y[:, param])
 
@@ -127,7 +125,7 @@ for epoch in range(epochs):
     # Adjust learning rate based on smoothed validation loss
     scheduler.step(smoothed_val_loss)
 
-    wandb.log({"train_loss": avg_train_loss, "val loss": avg_train_loss, "smoothed val loss":smoothed_val_loss })
+    wandb.log({"train_loss": avg_train_loss, "val loss": avg_val_loss, "smoothed val loss":smoothed_val_loss })
     if (epoch + 1) % 10 == 0:
         # Save the model
         torch.save(model.state_dict(), f"{save_path}/{name}_epoch_{epoch+1}.pth")
