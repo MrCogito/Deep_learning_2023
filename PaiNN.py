@@ -131,10 +131,11 @@ class Update(GraphLayer):
         return delta_s_ij, delta_v_ij
 
 class PaiNN(nn.Module):
-    def __init__(self, num_atoms, num_embeddings, cutoff_dist, hidden_out_dim):
+    def __init__(self, num_atoms, num_embeddings, cutoff_dist, hidden_out_dim, message_layers=3):
         super().__init__()
         self.num_embeddings = num_embeddings
         self.cutoff_dist = cutoff_dist
+        self.message_layers = message_layers
 
         self.embeddings = nn.Embedding(num_atoms, num_embeddings)
         self.message = Message(num_embeddings, cutoff_dist)
@@ -149,15 +150,9 @@ class PaiNN(nn.Module):
         equivariant_repr = torch.zeros((3, len(data.z), self.num_embeddings))
 
         # 2. Send messages and make updates
-        # Layer 1
-        embeddings, equivariant_repr = self.message(embeddings, equivariant_repr, data.pos, data.batch)
-        embeddings, equivariant_repr = self.update(embeddings, equivariant_repr, data.pos, data.batch)
-        # Layer 2
-        embeddings, equivariant_repr = self.message(embeddings, equivariant_repr, data.pos, data.batch)
-        embeddings, equivariant_repr = self.update(embeddings, equivariant_repr, data.pos, data.batch)
-        # Layer 3
-        embeddings, equivariant_repr = self.message(embeddings, equivariant_repr, data.pos, data.batch)
-        embeddings, equivariant_repr = self.update(embeddings, equivariant_repr, data.pos, data.batch)
+        for _ in range(self.message_layers):
+            embeddings, equivariant_repr = self.message(embeddings, equivariant_repr, data.pos, data.batch)
+            embeddings, equivariant_repr = self.update(embeddings, equivariant_repr, data.pos, data.batch)
 
         # 3. Final linear layer
         out = self.linear_out1(embeddings) # [batch_size, num_embeddings] -> [batch_size, hidden_out_dim]
