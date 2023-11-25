@@ -37,6 +37,9 @@ epochs = 999
 criterion = nn.MSELoss() 
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
+def root_mean_squared_error(preds, targets):
+    return torch.sqrt(torch.mean((preds - targets) ** 2))
+
 
 def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, param, isServer, name, batch_size, num_atoms, num_embeddings, cutoff_dist, device ):
 
@@ -62,7 +65,10 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion,
     for epoch in range(epochs):
         model.train()
         total_train_loss = 0.0
+        total_train_rmse = 0.0
+
         for batch in train_loader:
+            batch.to(device)
             optimizer.zero_grad()
             #Forward pass
             output = model(batch)
@@ -71,17 +77,24 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion,
             loss.backward()
             optimizer.step()
             total_train_loss += loss.item()
+            total_train_rmse += root_mean_squared_error(output.squeeze(), batch.y[:, param])
+
         avg_train_loss = total_train_loss / len(train_loader)
         print(f'Epoch [{epoch+1}/{epochs}], Train Loss: {avg_train_loss:.4f}')
 
         # Validation phase
         model.eval()
         total_val_loss = 0.0
+        total_val_rmse = 0.0
+
         with torch.no_grad():
             for batch in val_loader:
+                batch.to(device)
                 output = model(batch)
                 loss = criterion(output.squeeze(), batch.y[:, param])
                 total_val_loss += loss.item()
+                total_val_rmse += root_mean_squared_error(output.squeeze(), batch.y[:, param])
+
 
         avg_val_loss = total_val_loss / len(val_loader)
         # Apply exponential smoothing to validation loss

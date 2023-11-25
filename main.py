@@ -46,7 +46,7 @@ class Defaults(Parameters):
         val_length = int(0.1 * total_length)
         test_length = total_length - train_length - val_length
 
-        model = PaiNN(num_atoms=num_atoms, num_embeddings=num_embeddings, cutoff_dist=cutoff_dist, hidden_out_dim=hidden_out_dim)
+        model = PaiNN(num_atoms=num_atoms, num_embeddings=num_embeddings, cutoff_dist=cutoff_dist, hidden_out_dim=hidden_out_dim).to(device)
         # Perform random split
         criterion = nn.MSELoss() 
         optimizer = optim.Adam(model.parameters(), lr=0.001)
