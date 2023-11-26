@@ -106,12 +106,12 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion,
         else:
             smoothed_val_loss = (smoothing_factor * smoothed_val_loss) + ((1 - smoothing_factor) * avg_val_loss)
 
-        print(f'Epoch [{epoch+1}/{epochs}], Train Loss: {avg_train_loss:.4f}, Smoothed Validation Loss: {smoothed_val_loss:.4f}')
+        print(f'Epoch [{epoch+1}/{epochs}], Validation Loss: {avg_val_loss:.4f}, Smoothed Validation Loss: {smoothed_val_loss:.4f}')
 
         # Adjust learning rate based on smoothed validation loss
         scheduler.step(smoothed_val_loss)
 
-        wandb.log({"train_loss": avg_train_loss, "val loss": avg_train_loss, "smoothed val loss":smoothed_val_loss })
+        wandb.log({"train_loss": avg_train_loss, "val loss": avg_val_loss, "smoothed val loss":smoothed_val_loss })
         if (epoch + 1) % 10 == 0:
             # Save the model
             torch.save(model.state_dict(), f"{save_path}/epoch_{epoch+1}.pth")
