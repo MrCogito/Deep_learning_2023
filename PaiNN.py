@@ -1,7 +1,10 @@
+from typing import Union, Optional
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch import Tensor
 from torch.functional import F
+from torch_geometric.data import Batch
 from torch_geometric.datasets import QM9
 from torch_geometric.loader import DataLoader
 from torch_geometric.utils import scatter
@@ -134,6 +137,9 @@ class Update(GraphLayer):
         return delta_s_ij, delta_v_ij
 
 class MessageLayer(MessagePassing):
+
+    propagate_type = {"neighbours": Tensor, "s": Optional[Tensor], "v": Optional[Tensor], "r": Optional[Tensor], "neighbours": Optional[Tensor]}
+
     def __init__(self, num_embeddings, cutoff_dist, device):
         super().__init__(flow="source_to_target")
 
@@ -155,10 +161,10 @@ class MessageLayer(MessagePassing):
     # equivar_repr :    [3, natoms, num_embeddings]
     # pos :             [natoms, 3]
     # batch :           [natoms]
-    def forward(self, embeddings, equivar_repr, pos, batch):
+    def forward(self, embeddings: Tensor, equivar_repr: Tensor, pos: Tensor, batch: Tensor) -> Union[Tensor, Tensor]:
         neighbours = self.get_neighbours_as_edge_index(pos, batch, self.cutoff_dist)
 
-        return self.propagate(neighbours, s=embeddings, v=equivar_repr, r=pos, neighbours=neighbours)
+        return self.propagate(neighbours, s=embeddings, v=equivar_repr, r=pos, neighbours=neighbours, size=None)
 
     # _j is a neighbour, _i is the atom
     # s_j : [num_edges, num_embeddings]
@@ -253,20 +259,20 @@ class PaiNN(nn.Module):
         self.message_layers = message_layers
 
         self.embeddings = nn.Embedding(num_atoms, num_embeddings, padding_idx=0)
-        self.message = Message(num_embeddings, cutoff_dist, device)
-        self.update = Update(num_embeddings, cutoff_dist, device)
+        # self.message = Message(num_embeddings, cutoff_dist, device)
+        # self.update = Update(num_embeddings, cutoff_dist, device)
 
         self.messagelayer = MessageLayer(num_embeddings, cutoff_dist, device)
 
-        # multiple message passing layers
-        self.messageLayers = []
-        for _ in range(message_layers):
-            self.messageLayers.append(MessageLayer(num_embeddings, cutoff_dist, device))
+        # # multiple message passing layers
+        # self.messageLayers = []
+        # for _ in range(message_layers):
+        #     self.messageLayers.append(MessageLayer(num_embeddings, cutoff_dist, device))
 
         self.linear_out1 = nn.Linear(num_embeddings, hidden_out_dim)
         self.linear_out2 = nn.Linear(hidden_out_dim, 1)
 
-    def forward(self, data):
+    def forward(self, data: Batch) -> Tensor:
         # 1. Initialize inputs (s and v)
         embeddings = self.embeddings(data.z) # [batch_size, num_embeddings]
         equivariant_repr = torch.zeros((3, len(data.z), self.num_embeddings), device=self.device)
