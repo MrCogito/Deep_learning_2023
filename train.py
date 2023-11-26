@@ -7,6 +7,8 @@ from torch_geometric.loader import DataLoader
 from torch_geometric.utils import scatter
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import wandb
+import torch.nn.functional as F
+
 
 # ### load data
 # dataset = QM9(root=f"./data")
@@ -40,8 +42,7 @@ import wandb
 # #criterion = nn.MSELoss()
 # #optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-def root_mean_squared_error(preds, targets):
-    return torch.sqrt(torch.mean((preds - targets) ** 2))
+
 
 
 def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, param, device, save_path):
@@ -67,8 +68,8 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion,
 
     for epoch in range(epochs):
         model.train()
-        total_train_loss = 0.0
-        total_train_rmse = 0.0
+        total_train_loss, total_train_mae = 0.0, 0.0
+        
 
         for batch in train_loader:
             batch.to(device)
@@ -80,15 +81,20 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion,
             loss.backward()
             optimizer.step()
             total_train_loss += loss.item()
-            total_train_rmse += root_mean_squared_error(output.squeeze(), batch.y[:, param])
+            total_train_mae += F.l1_loss(output.squeeze(), batch.y[:, param], reduction='sum').item()
+
+            
 
         avg_train_loss = total_train_loss / len(train_loader)
-        print(f'Epoch [{epoch+1}/{epochs}], Train Loss: {avg_train_loss:.4f}')
+        avg_train_mae = total_train_mae / len(train_loader.dataset)
+
+        print(f'Epoch [{epoch+1}/{epochs}], Train Loss: {avg_train_loss:.4f}, Train L1 Loss: {avg_train_mae:.4f}' )
+        
 
         # Validation phase
         model.eval()
-        total_val_loss = 0.0
-        total_val_rmse = 0.0
+        total_val_loss, total_val_mae = 0.0
+        
 
         with torch.no_grad():
             for batch in val_loader:
@@ -96,22 +102,24 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion,
                 output = model(batch)
                 loss = criterion(output.squeeze(), batch.y[:, param])
                 total_val_loss += loss.item()
-                total_val_rmse += root_mean_squared_error(output.squeeze(), batch.y[:, param])
+                total_val_mae += F.l1_loss(output.squeeze(), batch.y[:, param], reduction='sum').item()
+
 
 
         avg_val_loss = total_val_loss / len(val_loader)
+        avg_val_mae = total_val_mae / len(val_loader.dataset)
         # Apply exponential smoothing to validation loss
         if smoothed_val_loss is None:
             smoothed_val_loss = avg_val_loss
         else:
             smoothed_val_loss = (smoothing_factor * smoothed_val_loss) + ((1 - smoothing_factor) * avg_val_loss)
 
-        print(f'Epoch [{epoch+1}/{epochs}], Validation Loss: {avg_val_loss:.4f}, Smoothed Validation Loss: {smoothed_val_loss:.4f}')
+        print(f'Epoch [{epoch+1}/{epochs}], Validation Loss: {avg_val_loss:.4f}, Validation L1: {avg_val_mae:.4f}, Smoothed Validation Loss: {smoothed_val_loss:.4f}')
 
         # Adjust learning rate based on smoothed validation loss
         scheduler.step(smoothed_val_loss)
 
-        wandb.log({"train_loss": avg_train_loss, "val loss": avg_val_loss, "smoothed val loss":smoothed_val_loss })
+        wandb.log({"train_loss": avg_train_loss, "val loss": avg_val_loss, "val l1 loss": avg_val_mae, "smoothed val loss":smoothed_val_loss })
         if (epoch + 1) % 10 == 0:
             # Save the model
             torch.save(model.state_dict(), f"{save_path}/epoch_{epoch+1}.pth")
