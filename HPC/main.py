@@ -69,7 +69,7 @@ class Defaults(Parameters):
             "cutoff_disc": cutoff_dist,
             "criterion": criterion.__class__.__name__,
             "Optimizer": optimizer.__class__.__name__,
-            "device": str(device)
+            "device": str(device),
             "Learning_rate": 0.001,
         })
 
