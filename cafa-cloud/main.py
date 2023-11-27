@@ -7,14 +7,13 @@ import torch.nn as nn
 import torch.optim as optim
 from torch_geometric.datasets import QM9
 from torch_geometric.loader import DataLoader
-from torch_geometric import compile
 import wandb
 
 from PaiNN import PaiNN
 from train import training_loop
 
 ### Hyperparameters
-name = "cafa-param-01"
+name = "cafa-param-01-vol2"
 save_path = f"/home/mikk/Deep_learning_2023/models/{name}"
 param          = 1
 epochs         = 500
@@ -24,7 +23,7 @@ num_embeddings = 128
 cutoff_dist    = 5
 hidden_out_dim = 128
 learning_rate  = 0.001
-weight_decay   = 0
+weight_decay   = 0.01
 
 def load_data(path, batch_size):
     ### load data
@@ -45,13 +44,15 @@ def load_data(path, batch_size):
     train_loader = DataLoader(train_set, batch_size=batch_size)
     val_loader = DataLoader(val_set, batch_size=batch_size)
     test_loader = DataLoader(test_set, batch_size=batch_size)
-    print("Data loaded and split")
     return train_loader, val_loader, test_loader
 
 if __name__ == "__main__":
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     train_loader, val_loader, test_loader = load_data("/home/mikk/Deep_learning_2023/data", batch_size)
+    print("Data loaded and split")
+    print(len(train_loader))
+    exit()
 
     ### Training
     # Instantiate the PaiNN model

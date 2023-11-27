@@ -69,7 +69,7 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion,
     for epoch in range(epochs):
         model.train()
         total_train_loss, total_train_mae = 0.0, 0.0
-        
+
 
         for batch in train_loader:
             batch.to(device)
@@ -83,18 +83,18 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion,
             total_train_loss += loss.item()
             total_train_mae += F.l1_loss(output.squeeze(), batch.y[:, param], reduction='sum').item()
 
-            
 
-        avg_train_loss = total_train_loss / len(train_loader)
+
+        avg_train_loss = total_train_loss / len(train_loader.dataset)
         avg_train_mae = total_train_mae / len(train_loader.dataset)
 
         print(f'Epoch [{epoch+1}/{epochs}], Train Loss: {avg_train_loss:.4f}, Train L1 Loss: {avg_train_mae:.4f}' )
-        
+
 
         # Validation phase
         model.eval()
-        total_val_loss, total_val_mae = 0.0
-        
+        total_val_loss, total_val_mae = 0.0, 0.0
+
 
         with torch.no_grad():
             for batch in val_loader:
@@ -106,7 +106,7 @@ def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion,
 
 
 
-        avg_val_loss = total_val_loss / len(val_loader)
+        avg_val_loss = total_val_loss / len(val_loader.dataset)
         avg_val_mae = total_val_mae / len(val_loader.dataset)
         # Apply exponential smoothing to validation loss
         if smoothed_val_loss is None:
