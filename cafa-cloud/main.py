@@ -7,32 +7,20 @@ import torch.nn as nn
 import torch.optim as optim
 from torch_geometric.datasets import QM9
 from torch_geometric.loader import DataLoader
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 import wandb
 
 from PaiNN import PaiNN
-from train import training_loop
+import train
 
-### Hyperparameters
-name = "cafa-param-01-vol2"
-save_path = f"/home/mikk/Deep_learning_2023/models/{name}"
-param          = 1
-epochs         = 500
-batch_size     = 64
-num_atoms      = 10
-num_embeddings = 128
-cutoff_dist    = 5
-hidden_out_dim = 128
-learning_rate  = 0.001
-weight_decay   = 0.01
-
-def load_data(path, batch_size):
+def load_data(path, batch_size, train_size=0.8, val_size=0.1):
     ### load data
     dataset = QM9(root=path)
 
     # Calculate split lengths
     total_length = len(dataset)
-    train_length = int(0.8 * total_length)
-    val_length = int(0.1 * total_length)
+    train_length = int(train_size * total_length)
+    val_length = int(val_size * total_length)
     test_length = total_length - train_length - val_length
 
     # Perform random split
@@ -49,32 +37,67 @@ def load_data(path, batch_size):
 if __name__ == "__main__":
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    train_loader, val_loader, test_loader = load_data("/home/mikk/Deep_learning_2023/data", batch_size)
+    rootdir = "/home/mikk/Deep_learning_2023"
+    resume_training = True
+    resume_from = 20
+
+    ### Hyperparameters
+    config = {
+        "name":  "cafa-param-01-vol4",
+        "param": 1,
+        "batch_size": 64,
+        "train_size": 0.8,
+        "test_size":  0.1,
+
+        "num_atoms":      10,
+        "num_embeddings": 128,
+        "cutoff_dist":    5,
+        "hidden_out_dim": 128,
+
+        "epochs":         500,
+        "learning_rate":  5e-4,
+        "weight_decay":   0.01,
+        "smoothing_factor": 0.9,
+        "device":           device
+    }
+    if resume_training:
+        config_loaded = train.get_config(f"{rootdir}/models/{config['name']}/epoch_{resume_from}.pth")
+        for k, v in config_loaded.items():
+            config[k] = v
+
+    save_path = f"{rootdir}/models/{config['name']}"
+    if not os.path.exists(save_path):
+        os.mkdir(save_path)
+    # sys.stdout = f"{rootdir}/models/{config['name']}/out.log"
+    # sys.stderr = f"{rootdir}/models/{config['name']}/err.log"
+
+
+    train_loader, val_loader, test_loader = load_data(f"{rootdir}/data", config["batch_size"], config["train_size"], config["test_size"])
     print("Data loaded and split")
 
     ### Training
     # Instantiate the PaiNN model
-    model = PaiNN(num_atoms=num_atoms, num_embeddings=num_embeddings, cutoff_dist=cutoff_dist, hidden_out_dim=hidden_out_dim, device=device) # Adjust the parameters as needed
+    model = PaiNN(num_atoms=config["num_atoms"], num_embeddings=config["num_embeddings"],
+                  cutoff_dist=config["cutoff_dist"], hidden_out_dim=config["hidden_out_dim"], device=device)
     model.to(device)
 
     criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    optimizer = optim.Adam(model.parameters(), lr=config["learning_rate"], weight_decay=config["weight_decay"])
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
+
+    smoothed_val_loss = None
+    from_epoch = 0
+    if resume_training:
+        model, optimizer, scheduler, from_epoch, smoothed_val_loss = train.get_state(f"{rootdir}/models/{config['name']}/epoch_{resume_from}.pth", model, optimizer, scheduler)
+
+    config["criterion"] = criterion.__class__.__name__
+    config["optimizer"] = optimizer.__class__.__name__
+    config["scheduler"] = scheduler.__class__.__name__
 
     ### wandb setup
     wandb.login()
-    wandb.init(project="PaiNN", name=name, config={
-        "param": param,
-        "epochs": epochs,
-        "batch_size": batch_size,
-        "num_atoms": num_atoms,
-        "num_embeddings": num_embeddings,
-        "cutoff_disc": cutoff_dist,
-        "criterion": criterion.__class__.__name__,
-        "Optimizer": optimizer.__class__.__name__,
-        "Learning_rate": learning_rate,
-        "weight_decay": weight_decay,
-        "device": str(device)
-    })
+    wandb.init(project="cafa", name=config["name"], config=config)
 
     print("Start training")
-    training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, param, device, save_path)
+    train.training_loop(model, optimizer, criterion, scheduler, train_loader, val_loader, config, save_path,
+                        from_epoch=from_epoch, smoothed_val_loss=smoothed_val_loss)
