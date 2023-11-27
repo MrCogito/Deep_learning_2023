@@ -57,9 +57,6 @@ if __name__ == "__main__":
     # Instantiate the PaiNN model
     model = PaiNN(num_atoms=num_atoms, num_embeddings=num_embeddings, cutoff_dist=cutoff_dist, hidden_out_dim=hidden_out_dim, device=device) # Adjust the parameters as needed
     model.to(device)
-    # print("Start compiling model")
-    # model = compile(model, dynamic=True, fullgraph=True)
-    # print("Model compiled")
 
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
