@@ -51,8 +51,6 @@ if __name__ == "__main__":
 
     train_loader, val_loader, test_loader = load_data("/home/mikk/Deep_learning_2023/data", batch_size)
     print("Data loaded and split")
-    print(len(train_loader))
-    exit()
 
     ### Training
     # Instantiate the PaiNN model
