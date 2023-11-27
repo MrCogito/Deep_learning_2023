@@ -51,7 +51,7 @@ class Defaults(Parameters):
         model = PaiNN(num_atoms=num_atoms, num_embeddings=num_embeddings, cutoff_dist=cutoff_dist, hidden_out_dim=hidden_out_dim).to(device)
         # Perform random split
         criterion = nn.MSELoss() 
-        optimizer = optim.Adam(model.parameters(), lr=0.001)
+        optimizer = optim.Adam(model.parameters(), lr=0.001,weight_decay=0.01)
         train_set, val_set, test_set = torch.utils.data.random_split(dataset,
                                                                         [train_length, val_length, test_length],
                                                                         generator=torch.Generator().manual_seed(42))
