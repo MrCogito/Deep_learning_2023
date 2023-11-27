@@ -3,4 +3,4 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from main import Defaults, GPU
 
-Defaults(name="TrochGeomtricTest", GPU=GPU.a80)
+Defaults(name="LossFix", GPU=GPU.a80)
