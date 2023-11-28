@@ -1,0 +1,12 @@
+Data loaded and split
+Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/home/mikk/Deep_learning_2023, stdin=None, shell=False, universal_newlines=False)
+Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/home/mikk/Deep_learning_2023, stdin=None, shell=False, universal_newlines=False)
+Starting new HTTPS connection (1): api.wandb.ai:443
+https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 1718
+https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 372
+Popen(['git', 'cat-file', '--batch-check'], cwd=/home/mikk/Deep_learning_2023, stdin=<valid stream>, shell=False, universal_newlines=False)
+Start training
+Epoch [1/500], Train Loss: 841574351902872.1250, Train L1 Loss: 1278424.5521
+Epoch [1/500], Validation Loss: 58248737831.5423, Validation L1: 27788.5046, Smoothed Validation Loss: 58248737831.5423
+Epoch [2/500], Train Loss: 81327051867.5121, Train L1 Loss: 22721.5195
+Epoch [2/500], Validation Loss: 85848359873.8072, Validation L1: 35517.8509, Smoothed Validation Loss: 69288586648.4483
