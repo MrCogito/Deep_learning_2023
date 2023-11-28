@@ -32,9 +32,9 @@ class Defaults(Parameters):
     cutoff_dist: float=5
     hidden_out_dim: int =128
     # SETUP PARAMATERS
-    def run(self, name: str, time: int, isServer: bool, epochs: int, batch_size: int, num_atoms: int, num_embeddings: int, cutoff_dist: float, hidden_out_dim: int):
+    def run(self, name: str, epochs: int, batch_size: int, num_atoms: int, num_embeddings: int, cutoff_dist: float, hidden_out_dim: int):
 
-        start = seconds()
+        save_path="/zhome/59/9/198225/Desktop/Deep_learning_2023/models/"
         
         folder = f"outputs/{'-'.join(name.split('-')[:-1])}/{name}/"
         if not exists(folder): mkdir(folder)
@@ -48,7 +48,6 @@ class Defaults(Parameters):
         train_length = int(0.8 * total_length)
         val_length = int(0.1 * total_length)
         test_length = total_length - train_length - val_length
-
         model = PaiNN(num_atoms=num_atoms, num_embeddings=num_embeddings, cutoff_dist=cutoff_dist, hidden_out_dim=hidden_out_dim, device=device).to(device)
         # Perform random split
         model = compile(model, dynamic=True)
@@ -75,7 +74,7 @@ class Defaults(Parameters):
             "Learning_rate": 0.001,
         })
 
-        training_loop(model=model, train_loader=train_loader, val_loader=val_loader, epochs=epochs, optimizer=optimizer, criterion=criterion, param=param, name=name, batch_size=batch_size, num_atoms=num_atoms, num_embeddings=num_embeddings, cutoff_dist=cutoff_dist, device=device)
+        training_loop(model=model, train_loader=train_loader, val_loader=val_loader, epochs=epochs, optimizer=optimizer, criterion=criterion, param=param, device=device, save_path=save_path)
 
         print(device)
         #ADD MODEL
