@@ -8,6 +8,7 @@ from torch_geometric.utils import scatter
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import wandb
 import torch.nn.functional as F
+import torch._dynamo
 
 
 # ### load data
@@ -47,6 +48,7 @@ import torch.nn.functional as F
 
 def training_loop(model, train_loader, val_loader, epochs, optimizer, criterion, param, device, save_path):
 
+    torch._dynamo.config.suppress_errors = True
 
     #SETUP WANDB
     # if isServer:

@@ -15,6 +15,8 @@ from torch_geometric.loader import DataLoader
 from train import training_loop
 from PaiNN import PaiNN
 import wandb
+import torch._dynamo
+
 
 @dtu
 class Defaults(Parameters):
@@ -33,6 +35,7 @@ class Defaults(Parameters):
     hidden_out_dim: int =128
     # SETUP PARAMATERS
     def run(self, name: str, epochs: int, batch_size: int, num_atoms: int, num_embeddings: int, cutoff_dist: float, hidden_out_dim: int):
+        torch._dynamo.config.suppress_errors = True
 
         save_path="/zhome/59/9/198225/Desktop/Deep_learning_2023/models/"
         
