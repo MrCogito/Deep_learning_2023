@@ -9,8 +9,10 @@ from torch_geometric.datasets import QM9
 from torch_geometric.loader import DataLoader
 from torch_geometric.utils import scatter
 from torch_geometric.nn import MessagePassing
+import torch.nn.init as init
 
 class MessageLayer(MessagePassing):
+
 
     propagate_type = {"neighbours": Tensor, "s": Optional[Tensor], "v": Optional[Tensor], "r": Optional[Tensor], "neighbours": Optional[Tensor]}
 
@@ -32,6 +34,7 @@ class MessageLayer(MessagePassing):
         self.linear_V = nn.Linear(self.num_embeddings, self.num_embeddings, bias=False)
         self.linear_update1 = nn.Linear(2*self.num_embeddings, self.num_embeddings)
         self.linear_update2 = nn.Linear(self.num_embeddings, 3*self.num_embeddings)
+        self.initialize_weights()
 
     # embeddings :      [natoms, num_embeddings]
     # equivar_repr :    [3, natoms, num_embeddings]
@@ -128,6 +131,14 @@ class MessageLayer(MessagePassing):
         neighbours = torch.index_select(neighbours, dim=0, index=torch.tensor([1,0], device=self.device)).type(torch.LongTensor).to(self.device)
 
         return neighbours
+    
+    def initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                # Kaiming Initialization for linear layers
+                init.kaiming_uniform_(m.weight, nonlinearity='relu')
+                if m.bias is not None:
+                    init.constant_(m.bias, 0)
 
 class PaiNN(nn.Module):
     def __init__(self, num_atoms, num_embeddings, cutoff_dist, hidden_out_dim, device, message_layers=3):
