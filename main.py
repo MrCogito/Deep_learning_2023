@@ -25,7 +25,7 @@ class Defaults(Parameters):
     GPU: None | GPU = GPU.v32
     time: int = 84600 # 23.5 hours
     #data_folder_name: str = "data_fod"
-    epochs: int = 1000
+    epochs: int = 999
     batch_size: int = 80  
     isServer: bool = True
 
