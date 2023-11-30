@@ -1,16 +1,16 @@
 # Deep_learning_2023
-| Parameter Number/Name | Person Running Training | Loss |
+| Parameter Index/Name | Person Running Training | Loss |
 |-----------------------|-------------------------|------|
 | 0                     |                        |      |
-| 1                     |                        |      |
-| 2                     |                         |      |
-| 3                     |                         |      |
-| 4                     |                         |      |
+| 1                     |    Karol                    |      |
+| 2                     |     Karol                    |      |
+| 3                     |     Karol                    |      |
+| 4                     |     Karol                   |      |
 | 5                     |                         |      |
 | 6                     |                         |      |
-| 7                     |                         |      |
-| 8                     |                         |      |
-| 9                     |                         |      |
-| 10                    |                         |      |
-| 11                    |                         |      |
-| 12                    |                         |      |
+| 11                     |                         |      |
+| 12                     |                         |      |
+| 13                     |                         |      |
+| 14                    |                         |      |
+| 15                    |                         |      |
+|                     |                         |      |
