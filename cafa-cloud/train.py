@@ -16,7 +16,7 @@ def get_state(file, model, optimizer, scheduler):
     smoothed_val_loss = saved_state["smoothed_val_loss"]
     return model, optimizer, scheduler, from_epoch, smoothed_val_loss
 
-def training_loop(model, optimizer, criterion, scheduler, train_loader, val_loader, config, save_path, logger, from_epoch=0, smoothed_val_loss=None):
+def training_loop(model, optimizer, criterion, scheduler, train_loader, val_loader, config, save_path, from_epoch=0, smoothed_val_loss=None):
     epochs = config["epochs"]
     device = torch.device(config["device"])
     param = config["param"]
@@ -44,7 +44,7 @@ def training_loop(model, optimizer, criterion, scheduler, train_loader, val_load
         avg_train_loss = total_train_loss / len(train_loader.dataset)
         avg_train_mae = total_train_mae / len(train_loader.dataset)
 
-        logger.info(f'Epoch [{epoch+1}/{epochs}], Train Loss: {avg_train_loss:.4f}, Train L1 Loss: {avg_train_mae:.4f}' )
+        print(f'Epoch [{epoch+1}/{epochs}], Train Loss: {avg_train_loss:.4f}, Train L1 Loss: {avg_train_mae:.4f}' )
 
 
         # Validation phase
@@ -70,7 +70,7 @@ def training_loop(model, optimizer, criterion, scheduler, train_loader, val_load
         else:
             smoothed_val_loss = (smoothing_factor * smoothed_val_loss) + ((1 - smoothing_factor) * avg_val_loss)
 
-        logger.info(f'Epoch [{epoch+1}/{epochs}], Validation Loss: {avg_val_loss:.4f}, Validation L1: {avg_val_mae:.4f}, Smoothed Validation Loss: {smoothed_val_loss:.4f}')
+        print(f'Epoch [{epoch+1}/{epochs}], Validation Loss: {avg_val_loss:.4f}, Validation L1: {avg_val_mae:.4f}, Smoothed Validation Loss: {smoothed_val_loss:.4f}')
 
         # Adjust learning rate based on smoothed validation loss
         scheduler.step(smoothed_val_loss)

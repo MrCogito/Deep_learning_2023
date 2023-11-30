@@ -1,6 +1,6 @@
 import sys
 import os
-import logging
+import traceback
 
 import torch
 import torch.nn as nn
@@ -36,9 +36,6 @@ def load_data(path, batch_size, train_size=0.8, val_size=0.1):
     return train_loader, val_loader, test_loader
 
 if __name__ == "__main__":
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     rootdir = "/home/mikk/Deep_learning_2023"
@@ -46,9 +43,10 @@ if __name__ == "__main__":
     resume_from = 80
 
     ### Hyperparameters
+    param = 2 #0..12
     config = {
-        "name":  "cafa-param-01-vol5",
-        "param": 1,
+        "param": param,
+        "name":  f"cafa-param-{param}-vol1",
         "batch_size": 64,
         "train_size": 0.8,
         "test_size":  0.1,
@@ -61,25 +59,27 @@ if __name__ == "__main__":
         "epochs":         500,
         "learning_rate":  5e-4,
         "weight_decay":   0.01,
-        "smoothing_factor": 0.6,
+        "smoothing_factor": 0.7,
         "device":           device
     }
     if resume_training:
-        logger.info(f"Resuming run {config['name']} from epoch {resume_from}")
+        print(f"Resuming run {config['name']} from epoch {resume_from}")
         config_loaded = train.get_config(f"{rootdir}/models/{config['name']}/epoch_{resume_from}.pth")
         for k, v in config_loaded.items():
             config[k] = v
+        print(config)
 
     save_path = f"{rootdir}/models/{config['name']}"
     if not os.path.exists(save_path):
         os.mkdir(save_path)
-    fh = logging.FileHandler(f'{rootdir}/models/{config["name"]}/out.log')
-    fh.setLevel(logging.DEBUG)
-    logger.addHandler(fh)
+
+    # stdout and stderr to a file
+    sys.stdout = open(f"{rootdir}/models/{config['name']}/out.log", "a", buffering=1)
+    sys.stderr = sys.stdout
 
 
     train_loader, val_loader, test_loader = load_data(f"{rootdir}/data", config["batch_size"], config["train_size"], config["test_size"])
-    logger.info("Data loaded and split")
+    print("Data loaded and split")
 
     ### Training
     # Instantiate the PaiNN model
@@ -105,12 +105,14 @@ if __name__ == "__main__":
     if resume_training:
         if "wandbid" in config.keys():
             wandb.init(project="cafa", name=config["name"], resume='allow', id=config["wandbid"])
+            print(f"Attached to wandb run with id {config['wandbid']}")
         else:
+            print("Can't attach to any previous wandb runs")
             wandb.init(project="cafa", name=config["name"], resume=True)
     else:
         config["wandbid"] = wandb.util.generate_id()
         wandb.init(project="cafa", name=config["name"], config=config, id=config["wandbid"])
 
-    logger.info("Start training")
-    train.training_loop(model, optimizer, criterion, scheduler, train_loader, val_loader, config, save_path, logger,
+    print("Start training")
+    train.training_loop(model, optimizer, criterion, scheduler, train_loader, val_loader, config, save_path,
                         from_epoch=from_epoch, smoothed_val_loss=smoothed_val_loss)

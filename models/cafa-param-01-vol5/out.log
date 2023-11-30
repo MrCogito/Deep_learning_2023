@@ -10,3 +10,167 @@ Epoch [1/500], Train Loss: 841574351902872.1250, Train L1 Loss: 1278424.5521
 Epoch [1/500], Validation Loss: 58248737831.5423, Validation L1: 27788.5046, Smoothed Validation Loss: 58248737831.5423
 Epoch [2/500], Train Loss: 81327051867.5121, Train L1 Loss: 22721.5195
 Epoch [2/500], Validation Loss: 85848359873.8072, Validation L1: 35517.8509, Smoothed Validation Loss: 69288586648.4483
+Epoch [3/500], Train Loss: 50906166891.1993, Train L1 Loss: 13230.7134
+Epoch [3/500], Validation Loss: 7694425915.2109, Validation L1: 11235.5001, Smoothed Validation Loss: 44650922355.1533
+Epoch [4/500], Train Loss: 11030737156.9224, Train L1 Loss: 9217.9544
+Epoch [4/500], Validation Loss: 12322797437.4107, Validation L1: 14218.5392, Smoothed Validation Loss: 31719672388.0563
+Epoch [5/500], Train Loss: 7465312160.0987, Train L1 Loss: 6049.7619
+Epoch [5/500], Validation Loss: 2491443133.9831, Validation L1: 6743.7021, Smoothed Validation Loss: 20028380686.4270
+Epoch [6/500], Train Loss: 2816057772.6425, Train L1 Loss: 4986.4893
+Epoch [6/500], Validation Loss: 3590541759.4783, Validation L1: 8222.4687, Smoothed Validation Loss: 13453245115.6475
+Epoch [7/500], Train Loss: 1913469464.9650, Train L1 Loss: 3008.5081
+Epoch [7/500], Validation Loss: 396537074.9424, Validation L1: 3011.5401, Smoothed Validation Loss: 8230561899.3655
+Epoch [8/500], Train Loss: 511535753.7866, Train L1 Loss: 2562.3532
+Epoch [8/500], Validation Loss: 1290327431.9416, Validation L1: 5039.7028, Smoothed Validation Loss: 5454468112.3959
+Epoch [9/500], Train Loss: 626247421.8643, Train L1 Loss: 1604.8825
+Epoch [9/500], Validation Loss: 157503544.9585, Validation L1: 1860.9467, Smoothed Validation Loss: 3335682285.4210
+Epoch [10/500], Train Loss: 64805320.8454, Train L1 Loss: 891.8773
+Epoch [10/500], Validation Loss: 2158349.5681, Validation L1: 661.3962, Smoothed Validation Loss: 2002272711.0798
+Epoch [11/500], Train Loss: 31287738.7682, Train L1 Loss: 1001.5314
+Epoch [11/500], Validation Loss: 169235264.4215, Validation L1: 1775.3708, Smoothed Validation Loss: 1269057732.4165
+Epoch [12/500], Train Loss: 113019777.3285, Train L1 Loss: 1067.0542
+Epoch [12/500], Validation Loss: 78446084.8513, Validation L1: 1276.0829, Smoothed Validation Loss: 792813073.3904
+Epoch [13/500], Train Loss: 55414680.0704, Train L1 Loss: 455.3066
+Epoch [13/500], Validation Loss: 432415.9752, Validation L1: 196.6326, Smoothed Validation Loss: 475860810.4243
+Epoch [14/500], Train Loss: 1295765.5290, Train L1 Loss: 164.2941
+Epoch [14/500], Validation Loss: 714564.4075, Validation L1: 181.7991, Smoothed Validation Loss: 285802312.0176
+Epoch [15/500], Train Loss: 1240032.3300, Train L1 Loss: 158.0333
+Epoch [15/500], Validation Loss: 884663.0153, Validation L1: 181.4497, Smoothed Validation Loss: 171835252.4167
+Epoch [16/500], Train Loss: 1488807.4682, Train L1 Loss: 168.8202
+Epoch [16/500], Validation Loss: 217133.2077, Validation L1: 141.4980, Smoothed Validation Loss: 103188004.7331
+Epoch [17/500], Train Loss: 199955.2173, Train L1 Loss: 118.6971
+Epoch [17/500], Validation Loss: 15045.8898, Validation L1: 113.1750, Smoothed Validation Loss: 61918821.1958
+Epoch [18/500], Train Loss: 63421.3959, Train L1 Loss: 104.8195
+Epoch [18/500], Validation Loss: 63184.6741, Validation L1: 116.4410, Smoothed Validation Loss: 37176566.5871
+Epoch [19/500], Train Loss: 183427.2717, Train L1 Loss: 96.6281
+Epoch [19/500], Validation Loss: 10765.5152, Validation L1: 84.5035, Smoothed Validation Loss: 22310246.1583
+Epoch [20/500], Train Loss: 11378.5703, Train L1 Loss: 65.6009
+Epoch [20/500], Validation Loss: 60840.9705, Validation L1: 75.6851, Smoothed Validation Loss: 13410484.0832
+Epoch [21/500], Train Loss: 128969511.8901, Train L1 Loss: 787.5001
+Epoch [21/500], Validation Loss: 97830.9008, Validation L1: 82.5106, Smoothed Validation Loss: 8085422.8102
+Epoch [22/500], Train Loss: 108219.8835, Train L1 Loss: 47.2645
+Epoch [22/500], Validation Loss: 5146.3630, Validation L1: 36.6552, Smoothed Validation Loss: 4853312.2313
+Epoch [23/500], Train Loss: 30635.3089, Train L1 Loss: 36.2938
+Epoch [23/500], Validation Loss: 431.9340, Validation L1: 28.7894, Smoothed Validation Loss: 2912160.1124
+Epoch [24/500], Train Loss: 392.4522, Train L1 Loss: 26.4811
+Epoch [24/500], Validation Loss: 173.6632, Validation L1: 26.3914, Smoothed Validation Loss: 1747365.5327
+Epoch [25/500], Train Loss: 167.3602, Train L1 Loss: 24.1597
+Epoch [25/500], Validation Loss: 121.2180, Validation L1: 23.7648, Smoothed Validation Loss: 1048467.8068
+Epoch [26/500], Train Loss: 157.1540, Train L1 Loss: 20.8658
+Epoch [26/500], Validation Loss: 142.6041, Validation L1: 19.8722, Smoothed Validation Loss: 629137.7257
+Epoch [27/500], Train Loss: 177.8683, Train L1 Loss: 15.6570
+Epoch [27/500], Validation Loss: 240.6179, Validation L1: 14.6350, Smoothed Validation Loss: 377578.8826
+Epoch [28/500], Train Loss: 221.5565, Train L1 Loss: 9.5137
+Epoch [28/500], Validation Loss: 152.7448, Validation L1: 8.9946, Smoothed Validation Loss: 226608.4275
+Epoch [29/500], Train Loss: 76.9265, Train L1 Loss: 5.6732
+Epoch [29/500], Validation Loss: 16.1208, Validation L1: 5.8416, Smoothed Validation Loss: 135971.5048
+Epoch [30/500], Train Loss: 10.9068, Train L1 Loss: 4.8495
+Epoch [30/500], Validation Loss: 51.7519, Validation L1: 5.1208, Smoothed Validation Loss: 81603.6036
+Epoch [31/500], Train Loss: 416.0085, Train L1 Loss: 6.3010
+Epoch [31/500], Validation Loss: 42.5680, Validation L1: 5.4369, Smoothed Validation Loss: 48979.1894
+Epoch [32/500], Train Loss: 48.9088, Train L1 Loss: 4.7637
+Epoch [32/500], Validation Loss: 0.5686, Validation L1: 4.4397, Smoothed Validation Loss: 29387.7411
+Epoch [33/500], Train Loss: 0.5902, Train L1 Loss: 4.3556
+Epoch [33/500], Validation Loss: 0.5236, Validation L1: 4.2367, Smoothed Validation Loss: 17632.8541
+Epoch [34/500], Train Loss: 0.5350, Train L1 Loss: 4.1147
+Epoch [34/500], Validation Loss: 0.4654, Validation L1: 3.9642, Smoothed Validation Loss: 10579.8986
+Epoch [35/500], Train Loss: 0.4697, Train L1 Loss: 3.8207
+Epoch [35/500], Validation Loss: 0.4061, Validation L1: 3.6680, Smoothed Validation Loss: 6348.1016
+Epoch [36/500], Train Loss: 0.4121, Train L1 Loss: 3.5409
+Epoch [36/500], Validation Loss: 0.3595, Validation L1: 3.4215, Smoothed Validation Loss: 3809.0048
+Epoch [37/500], Train Loss: 0.3714, Train L1 Loss: 3.3050
+Epoch [37/500], Validation Loss: 0.3293, Validation L1: 3.2122, Smoothed Validation Loss: 2285.5346
+Epoch [38/500], Train Loss: 0.3282, Train L1 Loss: 3.0624
+Epoch [38/500], Validation Loss: 0.2891, Validation L1: 2.9617, Smoothed Validation Loss: 1371.4364
+Epoch [39/500], Train Loss: 0.2699, Train L1 Loss: 2.7862
+Epoch [39/500], Validation Loss: 0.2260, Validation L1: 2.6774, Smoothed Validation Loss: 822.9522
+Epoch [40/500], Train Loss: 0.2129, Train L1 Loss: 2.5113
+Epoch [40/500], Validation Loss: 0.1826, Validation L1: 2.3903, Smoothed Validation Loss: 493.8444
+Epoch [41/500], Train Loss: 0.1676, Train L1 Loss: 2.2266
+Epoch [41/500], Validation Loss: 0.1411, Validation L1: 2.0808, Smoothed Validation Loss: 296.3631
+Epoch [42/500], Train Loss: 0.1286, Train L1 Loss: 1.9374
+Epoch [42/500], Validation Loss: 0.1072, Validation L1: 1.7889, Smoothed Validation Loss: 177.8607
+Epoch [43/500], Train Loss: 0.0986, Train L1 Loss: 1.6840
+Epoch [43/500], Validation Loss: 0.0816, Validation L1: 1.5611, Smoothed Validation Loss: 106.7490
+Epoch [44/500], Train Loss: 0.0772, Train L1 Loss: 1.4889
+Epoch [44/500], Validation Loss: 0.0653, Validation L1: 1.3822, Smoothed Validation Loss: 64.0756
+Epoch [45/500], Train Loss: 0.0635, Train L1 Loss: 1.3543
+Epoch [45/500], Validation Loss: 0.0559, Validation L1: 1.3460, Smoothed Validation Loss: 38.4677
+Epoch [46/500], Train Loss: 0.0565, Train L1 Loss: 1.2767
+Epoch [46/500], Validation Loss: 0.0463, Validation L1: 1.1969, Smoothed Validation Loss: 23.0992
+Epoch [47/500], Train Loss: 0.0485, Train L1 Loss: 1.1936
+Epoch [47/500], Validation Loss: 0.0514, Validation L1: 1.3214, Smoothed Validation Loss: 13.8800
+Epoch [48/500], Train Loss: 0.0438, Train L1 Loss: 1.1523
+Epoch [48/500], Validation Loss: 0.0452, Validation L1: 1.2382, Smoothed Validation Loss: 8.3461
+Epoch [49/500], Train Loss: 0.0400, Train L1 Loss: 1.1097
+Epoch [49/500], Validation Loss: 0.0328, Validation L1: 1.0026, Smoothed Validation Loss: 5.0208
+Epoch [50/500], Train Loss: 0.0369, Train L1 Loss: 1.0656
+Epoch [50/500], Validation Loss: 0.0290, Validation L1: 0.9376, Smoothed Validation Loss: 3.0241
+Epoch [51/500], Train Loss: 0.0344, Train L1 Loss: 1.0284
+Epoch [51/500], Validation Loss: 0.0273, Validation L1: 0.9130, Smoothed Validation Loss: 1.8254
+Epoch [52/500], Train Loss: 0.0322, Train L1 Loss: 0.9941
+Epoch [52/500], Validation Loss: 0.0315, Validation L1: 1.0268, Smoothed Validation Loss: 1.1078
+Epoch [53/500], Train Loss: 0.0296, Train L1 Loss: 0.9500
+Epoch [53/500], Validation Loss: 0.0258, Validation L1: 0.9202, Smoothed Validation Loss: 0.6750
+Epoch [54/500], Train Loss: 0.0272, Train L1 Loss: 0.9073
+Epoch [54/500], Validation Loss: 0.0272, Validation L1: 0.9764, Smoothed Validation Loss: 0.4159
+Epoch [55/500], Train Loss: 0.0254, Train L1 Loss: 0.8698
+Epoch [55/500], Validation Loss: 0.0225, Validation L1: 0.8740, Smoothed Validation Loss: 0.2585
+Epoch [56/500], Train Loss: 0.0237, Train L1 Loss: 0.8379
+Epoch [56/500], Validation Loss: 0.0185, Validation L1: 0.7806, Smoothed Validation Loss: 0.1625
+Epoch [57/500], Train Loss: 0.0222, Train L1 Loss: 0.8082
+Epoch [57/500], Validation Loss: 0.0176, Validation L1: 0.7616, Smoothed Validation Loss: 0.1045
+Epoch [58/500], Train Loss: 0.0211, Train L1 Loss: 0.7857
+Epoch [58/500], Validation Loss: 0.0165, Validation L1: 0.7417, Smoothed Validation Loss: 0.0693
+Epoch [59/500], Train Loss: 0.0197, Train L1 Loss: 0.7608
+Epoch [59/500], Validation Loss: 0.0170, Validation L1: 0.7565, Smoothed Validation Loss: 0.0484
+Epoch [60/500], Train Loss: 0.0193, Train L1 Loss: 0.7581
+Epoch [60/500], Validation Loss: 0.0194, Validation L1: 0.7958, Smoothed Validation Loss: 0.0368
+Epoch [61/500], Train Loss: 0.0187, Train L1 Loss: 0.7333
+Epoch [61/500], Validation Loss: 0.0164, Validation L1: 0.7381, Smoothed Validation Loss: 0.0286
+Epoch [62/500], Train Loss: 0.0182, Train L1 Loss: 0.7298
+Epoch [62/500], Validation Loss: 0.0153, Validation L1: 0.7162, Smoothed Validation Loss: 0.0233
+Epoch [63/500], Train Loss: 0.0201, Train L1 Loss: 0.7626
+Epoch [63/500], Validation Loss: 0.0201, Validation L1: 0.8131, Smoothed Validation Loss: 0.0220
+Epoch [64/500], Train Loss: 0.0171, Train L1 Loss: 0.7222
+Epoch [64/500], Validation Loss: 0.0143, Validation L1: 0.6944, Smoothed Validation Loss: 0.0189
+Epoch [65/500], Train Loss: 0.0169, Train L1 Loss: 0.7182
+Epoch [65/500], Validation Loss: 0.0177, Validation L1: 0.7762, Smoothed Validation Loss: 0.0184
+Epoch [66/500], Train Loss: 0.0182, Train L1 Loss: 0.7352
+Epoch [66/500], Validation Loss: 0.0140, Validation L1: 0.6536, Smoothed Validation Loss: 0.0167
+Epoch [67/500], Train Loss: 0.0191, Train L1 Loss: 0.7117
+Epoch [67/500], Validation Loss: 0.0131, Validation L1: 0.6457, Smoothed Validation Loss: 0.0153
+Epoch [68/500], Train Loss: 0.0160, Train L1 Loss: 0.6722
+Epoch [68/500], Validation Loss: 0.0130, Validation L1: 0.6447, Smoothed Validation Loss: 0.0144
+Epoch [69/500], Train Loss: 0.0180, Train L1 Loss: 0.7220
+Epoch [69/500], Validation Loss: 0.0217, Validation L1: 0.8293, Smoothed Validation Loss: 0.0173
+Epoch [70/500], Train Loss: 0.0162, Train L1 Loss: 0.7107
+Epoch [70/500], Validation Loss: 0.0142, Validation L1: 0.6724, Smoothed Validation Loss: 0.0161
+Epoch [71/500], Train Loss: 0.0144, Train L1 Loss: 0.6694
+Epoch [71/500], Validation Loss: 0.0143, Validation L1: 0.6593, Smoothed Validation Loss: 0.0154
+Epoch [72/500], Train Loss: 0.0157, Train L1 Loss: 0.6575
+Epoch [72/500], Validation Loss: 0.0118, Validation L1: 0.6016, Smoothed Validation Loss: 0.0139
+Epoch [73/500], Train Loss: 0.0148, Train L1 Loss: 0.6494
+Epoch [73/500], Validation Loss: 0.0121, Validation L1: 0.5985, Smoothed Validation Loss: 0.0132
+Epoch [74/500], Train Loss: 0.0153, Train L1 Loss: 0.6620
+Epoch [74/500], Validation Loss: 0.0138, Validation L1: 0.6376, Smoothed Validation Loss: 0.0134
+Epoch [75/500], Train Loss: 0.0160, Train L1 Loss: 0.6713
+Epoch [75/500], Validation Loss: 0.0116, Validation L1: 0.5983, Smoothed Validation Loss: 0.0127
+Epoch [76/500], Train Loss: 0.0146, Train L1 Loss: 0.6512
+Epoch [76/500], Validation Loss: 0.0114, Validation L1: 0.5920, Smoothed Validation Loss: 0.0122
+Epoch [77/500], Train Loss: 0.0157, Train L1 Loss: 0.6776
+Epoch [77/500], Validation Loss: 0.0127, Validation L1: 0.6445, Smoothed Validation Loss: 0.0124
+Epoch [78/500], Train Loss: 0.0144, Train L1 Loss: 0.6609
+Epoch [78/500], Validation Loss: 0.0110, Validation L1: 0.5843, Smoothed Validation Loss: 0.0118
+Epoch [79/500], Train Loss: 0.0146, Train L1 Loss: 0.6657
+Epoch [79/500], Validation Loss: 0.0153, Validation L1: 0.6756, Smoothed Validation Loss: 0.0132
+Epoch [80/500], Train Loss: 0.0146, Train L1 Loss: 0.6569
+Epoch [80/500], Validation Loss: 0.0110, Validation L1: 0.5939, Smoothed Validation Loss: 0.0123
+Epoch [81/500], Train Loss: 0.0173, Train L1 Loss: 0.6992
+Epoch [81/500], Validation Loss: 0.0174, Validation L1: 0.7207, Smoothed Validation Loss: 0.0143
+Epoch [82/500], Train Loss: 0.0169, Train L1 Loss: 0.6727
+Epoch [82/500], Validation Loss: 0.0118, Validation L1: 0.5859, Smoothed Validation Loss: 0.0133
+Epoch [83/500], Train Loss: 0.0147, Train L1 Loss: 0.6304
+Epoch [83/500], Validation Loss: 0.0114, Validation L1: 0.5856, Smoothed Validation Loss: 0.0126
+Epoch [84/500], Train Loss: 0.0138, Train L1 Loss: 0.6260
+Epoch [84/500], Validation Loss: 0.0122, Validation L1: 0.6136, Smoothed Validation Loss: 0.0124
