@@ -43,7 +43,7 @@ if __name__ == "__main__":
     resume_from = 80
 
     ### Hyperparameters
-    param = 2 #0..12
+    param = 15 #0..15, see readme
     config = {
         "param": param,
         "name":  f"cafa-param-{param}-vol1",
@@ -62,21 +62,21 @@ if __name__ == "__main__":
         "smoothing_factor": 0.7,
         "device":           device
     }
-    if resume_training:
-        print(f"Resuming run {config['name']} from epoch {resume_from}")
-        config_loaded = train.get_config(f"{rootdir}/models/{config['name']}/epoch_{resume_from}.pth")
-        for k, v in config_loaded.items():
-            config[k] = v
-        print(config)
-
     save_path = f"{rootdir}/models/{config['name']}"
     if not os.path.exists(save_path):
         os.mkdir(save_path)
 
     # stdout and stderr to a file
-    sys.stdout = open(f"{rootdir}/models/{config['name']}/out.log", "a", buffering=1)
+    sys.stdout = open(f"{save_path}/out.log", "a", buffering=1)
     sys.stderr = sys.stdout
+    print(f"PID on cafa-cloud: {os.getpid()}")
 
+    if resume_training:
+        print(f"Resuming run {config['name']} from epoch {resume_from}")
+        config_loaded = train.get_config(f"{save_path}/epoch_{resume_from}.pth")
+        for k, v in config_loaded.items():
+            config[k] = v
+        print(config)
 
     train_loader, val_loader, test_loader = load_data(f"{rootdir}/data", config["batch_size"], config["train_size"], config["test_size"])
     print("Data loaded and split")

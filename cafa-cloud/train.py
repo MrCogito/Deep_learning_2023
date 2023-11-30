@@ -76,7 +76,7 @@ def training_loop(model, optimizer, criterion, scheduler, train_loader, val_load
         scheduler.step(smoothed_val_loss)
 
         wandb.log({"train_loss": avg_train_loss, "train l1 loss": avg_train_mae, "val loss": avg_val_loss, "val l1 loss": avg_val_mae, "smoothed val loss":smoothed_val_loss })
-        if (epoch + 1) % 5 == 0:
+        if (epoch + 1) % 10 == 0:
             # Save the model
             save_dict = {
                 "epoch": epoch,
