@@ -26,24 +26,28 @@ class Defaults(Parameters):
     time: int = 84600 # 23.5 hours
     #data_folder_name: str = "data_fod"
     epochs: int = 1000
-    batch_size: int = 32  
+    batch_size: int = 80  
     isServer: bool = True
 
     num_atoms: int =10
     num_embeddings: int =128
     cutoff_dist: float=5
     hidden_out_dim: int =128
+    param: int = 1
+    path: str = "/zhome/59/9/198225/Desktop/Deep_learning_2023/models/"
     # SETUP PARAMATERS
-    def run(self, name: str, epochs: int, batch_size: int, num_atoms: int, num_embeddings: int, cutoff_dist: float, hidden_out_dim: int):
+    def run(self, name: str, epochs: int, batch_size: int, num_atoms: int, num_embeddings: int, cutoff_dist: float, hidden_out_dim: int, param: int, path: str):
         torch._dynamo.config.suppress_errors = True
 
-        save_path="/zhome/59/9/198225/Desktop/Deep_learning_2023/models/"
-        
+        save_path= path + name
+        # Create the directory if it does not exist
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
         folder = f"outputs/{'-'.join(name.split('-')[:-1])}/{name}/"
         if not exists(folder): mkdir(folder)
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        param = 1
+        
         
         # load and prep dataset
         dataset = QM9(root=f"./data")
