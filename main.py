@@ -44,7 +44,7 @@ class Defaults(Parameters):
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         folder = f"outputs/{'-'.join(name.split('-')[:-1])}/{name}/"
-        if not exists(folder): mkdir(folder)
+        if not exists(folder): os.makedirs(folder)
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         
