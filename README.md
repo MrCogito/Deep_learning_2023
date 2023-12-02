@@ -10,9 +10,9 @@
 |4  |$\epsilon_{LUMO}$   | 3               |     Karol               |          |            |
 |5  |$\Delta\epsilon$    | 4               |     Karol               |          |            |
 |6  |$\langle R^2\rangle$| 5               |Requires changes to model|          |            |
-|7  |ZPVE                | 6               |                         |          |            |
-|8  |$c_V$               | 11              |                         |          |            |
-|9  |$U_0^{ATOM}$        | 12              |                         |          |            |
-|10 |$U^{ATOM}$          | 13              |                         |          |            |
+|7  |ZPVE                | 6               |     Karol               |          |            |
+|8  |$c_V$               | 11              |     Karol               |          |            |
+|9  |$U_0^{ATOM}$        | 12              |     Karol               |          |            |
+|10 |$U^{ATOM}$          | 13              |     Karol               |          |            |
 |11 |$H^{ATOM}$          | 14              |     Mikk                |          |            |
 |12 |$G^{ATOM}$          | 15              |     Mikk                |          |            |
