@@ -2,3 +2,6 @@ data/
 venv/
 __pycache__/
 wandb/
+models/
+models_hpc/
+2WorkingSetup-0/
