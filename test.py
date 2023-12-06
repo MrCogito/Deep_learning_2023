@@ -19,9 +19,11 @@ def test(model, test_loader, param, device="cpu"):
         model.eval()  # Set the model in evaluation mode
         criterion = torch.nn.L1Loss() # Mean Absolute Error (MAE)
         total_loss = 0.0
+        total_samples = 0
 
         for batch in test_loader:
             batch.to(device)
+            batch_size = len(batch)
             #print(batch)
             targets = batch.y[:, param]
             predictions = model(batch)
@@ -31,10 +33,11 @@ def test(model, test_loader, param, device="cpu"):
             print('Loss:', loss)
 
             # Update total loss
-            total_loss += loss.item()
+            total_loss += loss.item() * batch_size
+            total_samples += batch_size
 
         # Calculate average MAE for entire test set
-        avg_loss = total_loss / len(test_loader.dataset)
+        avg_loss = total_loss / total_samples
 
     return avg_loss
 
@@ -54,7 +57,7 @@ if __name__ == "__main__":
     # Load model
     model = load_model(
         model_arch, # original model architecture
-        "models_hpc/12fixWorkingSetup-0/epoch_230.pth", # these are the saved final weights in the trained model
+        "models_hpc/6fixWorkingSetup-0/epoch_200.pth", # these are the saved final weights in the trained model
         device)
     
     # test on data
@@ -73,6 +76,8 @@ if __name__ == "__main__":
                                                                  [train_length, val_length, test_length],
                                                                  generator=torch.Generator().manual_seed(42))
     test_loader = DataLoader(test_set, batch_size)
-    average_loss = test(model, test_loader, param=0)
 
-    print(f'Average loss for param={0}:', average_loss)
+    parameter = 6
+    average_loss = test(model, test_loader, param=parameter)
+
+    print(f'Average loss for param={parameter}:', average_loss)
