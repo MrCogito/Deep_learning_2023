@@ -17,23 +17,23 @@ def load_model(model, path, device="cpu"):
 def test(model, test_loader, param, device="cpu"):
     with torch.no_grad():
         model.eval()  # Set the model in evaluation mode
-        criterion = torch.nn.MSELoss()
+        criterion = torch.nn.L1Loss() # Mean Absolute Error (MAE)
         total_loss = 0.0
 
         for batch in test_loader:
             batch.to(device)
-            print(batch)
+            #print(batch)
             targets = batch.y[:, param]
             predictions = model(batch)
 
-            # Calculate loss (MSE) for this batch
+            # Calculate loss (MAE) for this batch
             loss = criterion(predictions.squeeze(), targets)
             print('Loss:', loss)
 
             # Update total loss
             total_loss += loss.item()
 
-        # Calculate average MSE for entire test set
+        # Calculate average MAE for entire test set
         avg_loss = total_loss / len(test_loader.dataset)
 
     return avg_loss
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     # Load model
     model = load_model(
         model_arch, # original model architecture
-        "models/PaiNN-param0-MK/final.pth", # these are the saved final weights in the trained model
+        "models_hpc/12fixWorkingSetup-0/epoch_230.pth", # these are the saved final weights in the trained model
         device)
     
     # test on data
