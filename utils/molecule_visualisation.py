@@ -16,6 +16,9 @@ def visualize_graph(G, color, title="Molecule Visualization"):
 # load data
 dataset = QM9(root="./data/5A")
 
+# dataset stats
+print('Size of the dataset:', len(dataset))
+
 # pick molecule (i.e. 0 is )
 molecule = dataset[72081]
 
