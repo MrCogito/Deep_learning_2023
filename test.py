@@ -28,6 +28,8 @@ def test(model, test_loader, param, device="cpu"):
             targets = batch.y[:, param]
             predictions = model(batch)
 
+            print(f'{predictions[0]} vs {targets[0]}')
+
             # Calculate loss (MAE) for this batch
             loss = criterion(predictions.squeeze(), targets)
             print('Loss:', loss)
@@ -42,7 +44,6 @@ def test(model, test_loader, param, device="cpu"):
     return avg_loss
 
 
-# testing test.py
 if __name__ == "__main__":
     from PaiNN import PaiNN
     # Model parameters
@@ -57,7 +58,7 @@ if __name__ == "__main__":
     # Load model
     model = load_model(
         model_arch, # original model architecture
-        "models_hpc/6fixWorkingSetup-0/epoch_200.pth", # these are the saved final weights in the trained model
+        "models_hpc/12fixWorkingSetup-0/epoch_230.pth", # these are the saved final weights in the trained model
         device)
     
     # test on data
@@ -77,7 +78,7 @@ if __name__ == "__main__":
                                                                  generator=torch.Generator().manual_seed(42))
     test_loader = DataLoader(test_set, batch_size)
 
-    parameter = 6
+    parameter = 12
     average_loss = test(model, test_loader, param=parameter)
 
     print(f'Average loss for param={parameter}:', average_loss)
