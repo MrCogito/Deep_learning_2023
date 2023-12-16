@@ -140,6 +140,42 @@ class MessageLayer(MessagePassing):
                 if m.bias is not None:
                     init.constant_(m.bias, 0)
 
+class GatedEquivariantBlock(nn.Module):
+    def __init__(self, num_embeddings):
+        super().__init__()
+        self.num_embeddings = num_embeddings
+
+        # Linear layers for v
+        self.linear_v_right = nn.Linear(num_embeddings, num_embeddings, bias=False) # going right in the schematic
+        self.linear_v_down = nn.Linear(num_embeddings, num_embeddings, bias=False) # going down in the schematic
+
+        # Linear layers for s
+        self.linear_s1 = nn.Linear(2*num_embeddings, num_embeddings)
+        self.linear_s2 = nn.Linear(num_embeddings, 2*num_embeddings)
+
+    def forward(self, s_j, v_j):
+        # computing left lane
+        v_down = self.linear_v_down(v_j) # [3, num_edges, num_embeddings] ? check
+
+        # computing right lane
+        v_right = self.linear_v_right(v_j) # check
+        v_right = torch.norm(v_right, dim=0)
+
+        stack = torch.cat([s_j, v_right], dim=1) # [num_edges, 2*num_embeddings] ? check
+
+        stack = self.linear_s1(stack) # [num_edges, num_embeddings]
+        stack = F.silu(stack)
+        split = self.linear_s2(stack) # [num_edges, 3*num_embeddings]
+
+        split1 = split[:, :self.num_embeddings]  # First part, contains the first 128 elements in the second dimension
+        split2 = split[:, self.num_embeddings: 2*self.num_embeddings]  # Second part, contains the next 128 elements
+
+        # output
+        v = torch.mul(v_down, split1[None, :, :]) # [3, num_edges, num_embeddings]
+        s = split2
+
+        return s, v
+
 class PaiNN(nn.Module):
     def __init__(self, num_atoms, num_embeddings, cutoff_dist, hidden_out_dim, device, message_layers=3):
         super().__init__()
@@ -162,6 +198,9 @@ class PaiNN(nn.Module):
         self.linear_out1 = nn.Linear(num_embeddings, hidden_out_dim)
         self.linear_out2 = nn.Linear(hidden_out_dim, 1)
 
+        # Gated equivariant block
+        self.equivariant_block = GatedEquivariantBlock(num_embeddings)
+
     def forward(self, data: Batch) -> Tensor:
         # 1. Initialize inputs (s and v)
         embeddings = self.embeddings(data.z) # [batch_size, num_embeddings]
@@ -178,11 +217,14 @@ class PaiNN(nn.Module):
         #     embeddings, equivariant_repr = messagelayer(embeddings, equivariant_repr, data.pos, data.batch)
 
         # 3. Final linear layer
-        out = self.linear_out1(embeddings) # [batch_size, num_embeddings] -> [batch_size, hidden_out_dim]
-        out = F.silu(out)
-        out = self.linear_out2(out) # [batch_size, 1]
+        # out = self.linear_out1(embeddings) # [batch_size, num_embeddings] -> [batch_size, hidden_out_dim]
+        # out = F.silu(out)
+        # out = self.linear_out2(out) # [batch_size, 1]
 
-        out = scatter(out, data.batch, dim=0, reduce="sum")
+        # out = scatter(out, data.batch, dim=0, reduce="sum")
+
+        # 3. Gated Equivariant Block
+        out = self.equivariant_block(embeddings, equivariant_repr)
 
         return out
 
@@ -191,7 +233,7 @@ if __name__ == "__main__":
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     ### load data
-    dataset = QM9(root=f"/home/mikk/Deep_learning_2023/data")
+    dataset = QM9(root=f"data")
 
     # Calculate split lengths
     total_length = len(dataset)
@@ -226,6 +268,8 @@ if __name__ == "__main__":
             print(batch)
             optimizer.zero_grad()
             output = model(batch)
+            print('Output:', output)
+            quit()
             print(output.shape)
             print(output.squeeze())
             loss = criterion(output, batch.y[:, 1, None])
