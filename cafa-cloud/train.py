@@ -22,6 +22,25 @@ def training_loop(model, optimizer, criterion, scheduler, train_loader, val_load
     param = config["param"]
     smoothing_factor = config["smoothing_factor"]
 
+    mean = 0
+    length = 0
+    for batch in train_loader:
+        mean += batch.y[:, param].sum()
+        length += len(batch.y[:, param])
+    for batch in val_loader:
+        mean += batch.y[:, param].sum()
+        length += len(batch.y[:, param])
+    mean = mean / length
+    print(f"Mean of data {mean}")
+
+    std = 0
+    for batch in train_loader:
+        std += torch.sum((batch.y[:, param] - mean)**2)
+    for batch in val_loader:
+        std += torch.sum((batch.y[:, param] - mean)**2)
+    std = torch.sqrt(std/(length-1))
+    print(f"Standard dev. {std}")
+
     for epoch in range(from_epoch, epochs):
         model.train()
         total_train_loss, total_train_mae = 0.0, 0.0
@@ -31,18 +50,19 @@ def training_loop(model, optimizer, criterion, scheduler, train_loader, val_load
             batch.to(device)
             optimizer.zero_grad()
             #Forward pass
-            output = model(batch)
+            std_output = model(batch)
+            output = std_output.squeeze()*std + mean
             # Assuming 'output' and 'batch.y' are aligned for loss calculation
-            loss = criterion(output.squeeze(), batch.y[:, param])
+            loss = criterion(1000*output, 1000*(batch.y[:, param] - mean)/std)
             loss.backward()
             optimizer.step()
             total_train_loss += loss.item()
-            total_train_mae += F.l1_loss(output.squeeze(), batch.y[:, param], reduction='sum').item()
+            total_train_mae += F.l1_loss(1000*output*std+mean, 1000*batch.y[:, param]).item()
 
 
 
-        avg_train_loss = total_train_loss / len(train_loader.dataset)
-        avg_train_mae = total_train_mae / len(train_loader.dataset)
+        avg_train_loss = total_train_loss / len(train_loader)
+        avg_train_mae = total_train_mae / len(train_loader)
 
         print(f'Epoch [{epoch+1}/{epochs}], Train Loss: {avg_train_loss:.4f}, Train L1 Loss: {avg_train_mae:.4f}' )
 
@@ -55,15 +75,16 @@ def training_loop(model, optimizer, criterion, scheduler, train_loader, val_load
         with torch.no_grad():
             for batch in val_loader:
                 batch.to(device)
-                output = model(batch)
-                loss = criterion(output.squeeze(), batch.y[:, param])
+                std_output = model(batch)
+                output = std_output.squeeze()*std + mean
+                loss = criterion(1000*output, 1000*(batch.y[:, param]-mean)/std)
                 total_val_loss += loss.item()
-                total_val_mae += F.l1_loss(output.squeeze(), batch.y[:, param], reduction='sum').item()
+                total_val_mae += F.l1_loss(1000*output, 1000*(batch.y[:, param] - mean)/std).item()
 
 
 
-        avg_val_loss = total_val_loss / len(val_loader.dataset)
-        avg_val_mae = total_val_mae / len(val_loader.dataset)
+        avg_val_loss = total_val_loss / len(val_loader)
+        avg_val_mae = total_val_mae / len(val_loader)
         # Apply exponential smoothing to validation loss
         if smoothed_val_loss is None:
             smoothed_val_loss = avg_val_loss

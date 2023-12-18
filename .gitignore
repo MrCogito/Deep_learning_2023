@@ -5,3 +5,4 @@ wandb/
 models/
 models_hpc/
 2WorkingSetup-0/
+.ipynb_checkpoints/

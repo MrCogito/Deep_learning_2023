@@ -1,6 +1,5 @@
 import sys
 import os
-import traceback
 
 import torch
 import torch.nn as nn
@@ -40,14 +39,14 @@ if __name__ == "__main__":
 
     rootdir = "/home/mikk/Deep_learning_2023"
     resume_training = False
-    resume_from = 80
+    resume_from = 250
 
     ### Hyperparameters
-    param = 15 #0..15, see readme
+    param = 2 #0..15, see readme
     config = {
         "param": param,
-        "name":  f"cafa-param-{param}-vol1",
-        "batch_size": 64,
+        "name":  f"cafa-param-{param}-std",
+        "batch_size": 100,
         "train_size": 0.8,
         "test_size":  0.1,
 
@@ -63,8 +62,13 @@ if __name__ == "__main__":
         "device":           device
     }
     save_path = f"{rootdir}/models/{config['name']}"
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
+    if not resume_training:
+        if os.path.exists(save_path):
+            print("Run with this name already exists!")
+            exit()
+            # pass
+        else:
+            os.mkdir(save_path)
 
     # stdout and stderr to a file
     sys.stdout = open(f"{save_path}/out.log", "a", buffering=1)
