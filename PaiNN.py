@@ -216,15 +216,15 @@ class PaiNN(nn.Module):
         # for messagelayer in self.messageLayers:
         #     embeddings, equivariant_repr = messagelayer(embeddings, equivariant_repr, data.pos, data.batch)
 
+        # Gated Equivariant Block
+        embeddings, equivariant_repr = self.equivariant_block(embeddings, equivariant_repr)
+
         # 3. Final linear layer
-        # out = self.linear_out1(embeddings) # [batch_size, num_embeddings] -> [batch_size, hidden_out_dim]
-        # out = F.silu(out)
-        # out = self.linear_out2(out) # [batch_size, 1]
+        out = self.linear_out1(embeddings) # [batch_size, num_embeddings] -> [batch_size, hidden_out_dim]
+        out = F.silu(out)
+        out = self.linear_out2(out) # [batch_size, 1]
 
-        # out = scatter(out, data.batch, dim=0, reduce="sum")
-
-        # 3. Gated Equivariant Block
-        out = self.equivariant_block(embeddings, equivariant_repr)
+        out = scatter(out, data.batch, dim=0, reduce="sum")
 
         return out
 
