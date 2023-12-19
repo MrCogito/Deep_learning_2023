@@ -21,22 +21,26 @@ def test(model, test_loader, param, device="cpu"):
         total_loss = 0.0
         total_samples = 0
 
+        counter = 1
+        batch_count = len(test_loader)
         for batch in test_loader:
             batch.to(device)
             batch_size = len(batch)
-            #print(batch)
             targets = batch.y[:, param]
             predictions = model(batch)
 
-            print(f'{predictions[0]} vs {targets[0]}')
+            #print(f'{predictions[0]} vs {targets[0]}')
 
             # Calculate loss (MAE) for this batch
             loss = criterion(predictions.squeeze(), targets)
-            print('Loss:', loss)
 
             # Update total loss
             total_loss += loss.item() * batch_size
             total_samples += batch_size
+
+            # print
+            print(f'Batch {counter}/{batch_count} Loss:', loss.item())
+            counter += 1
 
         # Calculate average MAE for entire test set
         avg_loss = total_loss / total_samples
